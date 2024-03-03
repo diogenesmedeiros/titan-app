@@ -40,7 +40,7 @@ onMount(() => {
 					</div>
 					{:else}
 					<div class="btn-group">
-						<a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-current="page" href="/login">Autenticação</a>
+						<a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-current="page" href="/signin">Autenticação</a>
 						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start">
 							<li><a class="dropdown-item" href="/signin">Entrar na conta</a></li>
 						  	<li><a class="dropdown-item" href="/signup">Criar conta</a></li>

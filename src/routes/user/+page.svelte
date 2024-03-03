@@ -1,11 +1,8 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import { useParams } from "svelte-routing";
       
     let userData = [];
-
-    const params = useParams();
     
     onMount(async () => {
         let token = localStorage.getItem('token');
@@ -13,7 +10,7 @@
         const username = parts[parts.length - 1];
 
         try {
-            const response = await fetch(`http://localhost:8081/api/user/${params}`, {
+            const response = await fetch(`http://localhost:8081/api/user/`, {
                 headers: { 
                     'authorization': token
                 }
