@@ -24,7 +24,7 @@ async function signinHandlerSubmit(event) {
 	}
 
 	try {
-		const response = await fetch("http://localhost:8081/api/user/signup", {
+		const response = await fetch(`${localStorage.getItem('url_ngrok')}/api/user/signup`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

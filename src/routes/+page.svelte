@@ -8,7 +8,7 @@ onMount(async () => {
 	let token = localStorage.getItem('token');
 
 	try {
-		const response = await fetch("http://localhost:8081/api/user/shaolim", {
+		const response = await fetch(`${localStorage.getItem('url_ngrok')}/api/user/shaolim`, {
 			headers: { 
 				'authorization': token
 			}

@@ -1,0 +1,11 @@
+Sempre adicione a linha de scripts abaixo no package.json quando estiver em dev e tira quando for subir para o
+github para não ocorrer error no vercel
+	"scripts": {
+		"dev": "vite dev",
+		"git": "git init && git add -A && git commit -m 'first commit'",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
+		"lint": "eslint ."
+	},
