@@ -10,12 +10,10 @@
         const username = parts[parts.length - 1];
 
         try {
-            const response = await fetch(`${localStorage.getItem('url_ngrok')}/api/user/`, {
-              method: 'GET',
-              headers: { 
-                'authorization': token,
-                'Content-Type': 'application/json'
-              }
+            const response = await fetch(`${localStorage.getItem('url_grok')}/api/user/shaolim`, {
+                headers: { 
+                    'authorization': token
+                }
             });
             if (!response.ok) {
               throw new Error('Erro ao carregar os dados');

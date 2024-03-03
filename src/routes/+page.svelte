@@ -9,9 +9,11 @@ onMount(async () => {
 
 	try {
 		const response = await fetch(`${localStorage.getItem('url_ngrok')}/api/user/shaolim`, {
-			headers: { 
-				'authorization': token
-			}
+			method: 'GET',
+            headers: { 
+            	'authorization': token,
+                'Content-Type': 'application/json'
+            }
 		});
 		if (!response.ok) {
 		  throw new Error('Erro ao carregar os dados');
