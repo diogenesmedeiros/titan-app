@@ -40,5 +40,5 @@ onMount(async () => {
 	  {/each}
 	</ul>
   {:else}
-	<p>Aguardando dados...</p>
+	<p>Aguardando dados..</p>
   {/if}  
