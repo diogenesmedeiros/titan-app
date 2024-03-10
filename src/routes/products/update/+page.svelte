@@ -1,0 +1,3 @@
+<script>
+    // @ts-nocheck
+</script>

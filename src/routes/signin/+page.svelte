@@ -12,7 +12,7 @@
 		}
 
 		try {
-			const response = await fetch(`${localStorage.getItem('url_ngrok')}/api/user/signin`, {
+			const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/signin`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

@@ -8,7 +8,7 @@ onMount(async () => {
 	let token = localStorage.getItem('token');
 
 	try {
-		const response = await fetch(`${localStorage.getItem('url_ngrok')}/api/user/shaolim`, {
+		const response = await fetch(`${localStorage.getItem('url')}/api/v1/immobile/immobiles`, {
 			method: 'GET',
             headers: { 
             	'authorization': token,
@@ -19,7 +19,7 @@ onMount(async () => {
 		  throw new Error('Erro ao carregar os dados');
 		}
 		const data = await response.json();
-		userData = data.users;
+		userData = data.message;
 	} catch (error) {
 		console.error(error);
 	}
@@ -34,10 +34,11 @@ onMount(async () => {
 	<ul>
 	  {#each userData as user}
 		<li>
-		  <img src={user.profile_picture} alt={user.nickname}>
-		  <p>Nickname: {user.nickname}</p>
-		  <p>Biografia: {user.biography}</p>
-		  <p>Data de criação: {user.created}</p>
+		  <img width='150px' src={user.photo_url_product} alt={user.user_nickname}>
+		  <p>Title: {user.title}</p>
+		  <p>Description: {user.description}</p>
+		  <p>Preço: R${user.price}</p>
+		  <p>Data de criação: {user.creationDate}</p>
 		</li>
 	  {/each}
 	</ul>
