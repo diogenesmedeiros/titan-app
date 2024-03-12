@@ -1,47 +1,60 @@
 <script>
-// @ts-nocheck
-import { onMount } from "svelte";
-  
-let userData = [];
+	// @ts-nocheck
+	import { onMount } from "svelte";
+	
+	let userData = [];
 
-onMount(async () => {
-	let token = localStorage.getItem('token');
+	onMount(async () => {
+		let token = localStorage.getItem('token');
 
-	try {
-		const response = await fetch(`${localStorage.getItem('url')}/api/v1/immobile/immobiles`, {
-			method: 'GET',
-            headers: { 
-            	'authorization': token,
-                'Content-Type': 'application/json'
-            }
-		});
-		if (!response.ok) {
-		  throw new Error('Erro ao carregar os dados');
+		try {
+			const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties`, {
+				method: 'GET',
+				headers: { 
+					'authorization': token,
+					'Content-Type': 'application/json'
+				}
+			});
+			if (!response.ok) {
+			throw new Error('Erro ao carregar os dados');
+			}
+			const data = await response.json();
+			userData = data.message;
+		} catch (error) {
+			console.error(error);
 		}
-		const data = await response.json();
-		userData = data.message;
-	} catch (error) {
-		console.error(error);
-	}
-});
+	});
 </script>
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
-  
-  {#if userData.length > 0}
-	<ul>
-	  {#each userData as user}
-		<li>
-		  <img width='150px' src={user.photo_url_product} alt={user.user_nickname}>
-		  <p>Title: {user.title}</p>
-		  <p>Description: {user.description}</p>
-		  <p>Preço: R${user.price}</p>
-		  <p>Data de criação: {user.creationDate}</p>
-		</li>
-	  {/each}
-	</ul>
-  {:else}
-	<p>Aguardando dados..</p>
-  {/if}  
+<div class="row row-cols-1 row-cols-md-3 g-4 p-5 form-shadow">
+	{#if userData.length > 0}
+		{#each userData as user}
+			<a href="/properties/{user.id}" class="w-25 col" style="text-decoration: none">
+				<div class="card form-shadow">
+					<img src={user.photo_url_product} class="card-img-top" alt={user.user_nickname}>
+					<div class="card-body">
+						<h5 class="card-title">{user.title}</h5>
+						<p class="card-text">{user.description}</p>
+						<hr>
+						<p class="card-text fs-5">R${user.price}</p>
+					</div>
+					<div class="card-footer">
+						<small class="text-body-secondary">{user.city} - {user.state}</small>
+					</div>
+				</div>
+			</a>
+		{/each}
+	{:else}
+		<div class="position-absolute top-50 start-50 translate-middle">
+			<div>
+				<center><div class="spinner-border text-primary" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div></center>
+				<center><p>Aguardando dados...</p></center>
+			</div>
+		</div>
+	{/if}  
+</div>

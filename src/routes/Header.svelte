@@ -1,18 +1,60 @@
 <script>
-// @ts-nocheck
-import { onMount } from "svelte";
+	// @ts-nocheck
+	import { onMount } from "svelte";
+	import jQuery from 'jquery'
 
-let token;
-let userData;
+	let token, userData;
+	let theme, darkModeSwitches, darkModeSwitchLabel;
 
-onMount(() => {
-	token = localStorage.getItem('token');
-	userData = JSON.parse(sessionStorage.getItem('user'));
-})
+	onMount(() => {
+		token = localStorage.getItem('token');
+		userData = JSON.parse(sessionStorage.getItem('user'));
+
+		jQuery(document).ready(function(){
+			theme = localStorage.getItem("theme");
+			darkModeSwitches = jQuery(".dark-mode-switch");
+			darkModeSwitchLabel = jQuery('.dark-mode-switch-label');
+
+			if(theme == "light") {
+				light();
+				darkModeSwitches.prop('checked', false);
+			}else{
+				dark();
+				darkModeSwitches.prop('checked', true);
+			}
+
+			darkModeSwitches.change(function(){
+				if (jQuery(this).is(":checked")) {
+					dark();
+				} else {
+					light();
+				}
+			});
+
+			function light() {
+				jQuery("body").removeClass("bg-dark text-white").addClass("bg-light text-dark")
+				jQuery("nav").removeClass("bg-dark").addClass("bg-body-tertiary").removeAttr("data-bs-theme")
+				jQuery(".form-shadow").removeClass("bg-dark").addClass("bg-body-tertiary").removeAttr("data-bs-theme")
+				
+
+				localStorage.setItem("theme", "light")
+				darkModeSwitchLabel.html('Queima olho');
+			}
+
+			function dark() {
+				jQuery("body").removeClass("bg-light text-dark").addClass("bg-dark text-white")
+				jQuery("nav").removeClass("bg-body-tertiary").addClass("bg-dark").attr("data-bs-theme", "dark")
+				jQuery(".form-shadow").removeClass("bg-body-tertiary").addClass("bg-dark").attr("data-bs-theme", "dark")
+
+				localStorage.setItem("theme", "dark")
+				darkModeSwitchLabel.html('Dark');
+			}
+		})
+	});
 </script>
 <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom border-body">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="/">Titan</a>
+		<a class="navbar-brand" href="/">Olha a casa aí</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -26,9 +68,9 @@ onMount(() => {
 						  <li><a class="dropdown-item" href="/user/{userData.nickname}">Ver perfil</a></li>
 						  <li><a class="dropdown-item" href="/user/settings/account">Gerenciamento de conta</a></li>
 						  <li><hr class="dropdown-divider"></li>
-						  <li><a class="dropdown-item" href="/user/shopping/all">Compras</a></li>
-						  <li><a class="dropdown-item" href="/user/shopping/rating">Sua avaliações</a></li>
-						  <li><a class="dropdown-item" href="/product/addProduct">Começar a vender</a></li>
+						  <li><a class="dropdown-item" href="/properties/interested/">Compras</a></li>
+						  <li><a class="dropdown-item" href="/properties/rating">Suas avaliações</a></li>
+						  <li><a class="dropdown-item" href="/properties/add">Começar a vender</a></li>
 						  <li><hr class="dropdown-divider"></li>
 						  <li class="p-1"><div class="form-check form-switch">
 							<input class="form-check-input dark-mode-switch" type="checkbox" role="switch">
