@@ -6,7 +6,7 @@
 
     onMount(async () => {
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/immobile/immobiles/`, {
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties`, {
                 method: 'GET',
                 headers: { 
                     'authorization': localStorage.getItem('token'),

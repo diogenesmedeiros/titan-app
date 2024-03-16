@@ -2,6 +2,7 @@
 	// @ts-nocheck
 	import { onMount } from "svelte";
 	import jQuery from 'jquery'
+	import { startTokenExpirationTimer, tokenExpiration } from "../services/AuthService";
 
 	let token, userData;
 	let theme, darkModeSwitches, darkModeSwitchLabel;
@@ -9,6 +10,16 @@
 	onMount(() => {
 		token = localStorage.getItem('token');
 		userData = JSON.parse(sessionStorage.getItem('user'));
+
+		console.log()
+
+		startTokenExpirationTimer(86400000);
+
+		tokenExpiration.subscribe(value => {
+			if (value === 'expired') {
+				console.log('O token JWT expirou.');
+			}
+		});
 
 		jQuery(document).ready(function(){
 			theme = localStorage.getItem("theme");
@@ -91,7 +102,7 @@
 					{/if}
 				</li>
 			</ul>
-			<form class="position-absolute top-0 start-50 translate-middle-x py-2 px-4" role="search">
+			<form class="position-absolute top-0 start-50 translate-middle-x py-2 px-4" role="search" action="/search">
 				<div class="input-group mb-3">
 					<input class="form-control" type="search" name="q" placeholder="Faça uma pesquisa" aria-label="Search">
 					<button class="input-group-text" id="basic-addon1" type="submit">

@@ -26,7 +26,7 @@
 	});
 </script>
 <svelte:head>
-	<title>Home</title>
+	<title>Inicio - Olha a casa aí</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 <div class="row row-cols-1 row-cols-md-3 g-4 p-5 form-shadow">

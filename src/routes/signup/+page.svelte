@@ -41,7 +41,7 @@ async function signinHandlerSubmit(event) {
 }
 </script>
 <svelte:head>
-	<title>About</title>
+	<title>Cadastro - Olha a casa aí</title>
 	<meta name="description" content="About this app" />
 </svelte:head>
 

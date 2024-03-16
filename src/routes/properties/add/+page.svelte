@@ -37,7 +37,7 @@
 	<meta name="description" content="Add product this app" />
 </svelte:head>
 <div class="position-absolute top-50 start-50 translate-middle" style="margin-top: 150px;">
-	<div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded form-shadow">
+	<div class="shadow-lg p-3 mb-5 rounded form-shadow">
 		<form on:submit={addProductHandlerSubmit} class="row g-3">			  
 			<div class="mb-3">
 				<label for="title" class="form-label">Titulo do imovel</label>

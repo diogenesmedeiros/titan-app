@@ -21,11 +21,16 @@
 
             const responseData = await response.json();
             userData = responseData.message;
+
+            document.title = userData[0].nickname + " - Olha a casa aí"
         } catch(error) {
             console.error(error);
         }
     })
 </script>
+<svelte:head>
+	<meta name="description" content="Svelte demo app" />
+</svelte:head>
 {#if userData.length > 0}
   {#each userData as user}
     <img src={user.profile_picture} alt={user.nickname}>
