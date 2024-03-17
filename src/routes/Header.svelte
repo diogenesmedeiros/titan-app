@@ -11,8 +11,6 @@
 		token = localStorage.getItem('token');
 		userData = JSON.parse(sessionStorage.getItem('user'));
 
-		console.log()
-
 		startTokenExpirationTimer(86400000);
 
 		tokenExpiration.subscribe(value => {

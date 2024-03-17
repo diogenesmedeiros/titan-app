@@ -14,7 +14,7 @@
                 }
             });
             if (!response.ok) {
-            throw new Error('Erro ao carregar os dados');
+              throw new Error('Erro ao carregar os dados');
             }
             const data = await response.json();
             immobilesData = data.message;
