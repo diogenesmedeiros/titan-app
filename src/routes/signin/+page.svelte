@@ -10,14 +10,14 @@
 			email: email,
 			password: password
 		}
-
 		try {
 			const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/signin`, {
 				method: 'POST',
                 credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
-					'Accept': 'application/json'
+					'Accept': 'application/json',
+					//'X-CSRF-Token': document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN')).split('=')[1]
 				},
 				body: JSON.stringify(formData)
 			})
@@ -27,7 +27,7 @@
             }else{
 				const data = await response.json();
 
-				localStorage.setItem('token', data.token);
+				sessionStorage.setItem('token', data.token);
 				sessionStorage.setItem('user', JSON.stringify(data.user))
 
 				window.location.href='/'

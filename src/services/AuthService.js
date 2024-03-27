@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 
 export const tokenExpiration = writable(null);
 
-export function startTokenExpirationTimer(expirationTime) {
+export async function startTokenExpirationTimer(expirationTime) {
     const expirationTimer = setTimeout(() => {
         tokenExpiration.set('expired');
 

@@ -8,7 +8,7 @@
         try {
             const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/`, {
                 headers: { 
-                    'authorization': localStorage.getItem('token')
+                    'authorization': sessionStorage.getItem('token')
                 }
             });
             if (!response.ok) {
@@ -22,7 +22,7 @@
     });
 </script>
 <svelte:head>
-  <title>Home</title>
+  <title>Algumas pessoas - Olha a casa aí</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
       

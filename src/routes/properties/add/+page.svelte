@@ -19,7 +19,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-                    'authorization': localStorage.getItem('token')
+                    'authorization': sessionStorage.getItem('token')
 				},
 				body: JSON.stringify(formData)
 			})
@@ -33,7 +33,7 @@
 	}
 </script>
 <svelte:head>
-	<title>Add product</title>
+	<title>Adicionar imovel - Olha a casa aí</title>
 	<meta name="description" content="Add product this app" />
 </svelte:head>
 <div class="position-absolute top-50 start-50 translate-middle" style="margin-top: 150px;">

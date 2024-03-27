@@ -5,13 +5,11 @@
 	let userData = [];
 
 	onMount(async () => {
-		let token = localStorage.getItem('token');
-
 		try {
 			const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties`, {
 				method: 'GET',
 				headers: { 
-					'authorization': token,
+					'authorization': sessionStorage.getItem('token'),
 					'Content-Type': 'application/json'
 				}
 			});

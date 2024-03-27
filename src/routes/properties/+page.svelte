@@ -26,7 +26,7 @@
     });
 </script>
 <svelte:head>
-  <title>Home</title>
+  <title>Alguns imoveis - Olha a casa aí</title>
   <meta name="description" content="Svelte demo app" />
 </svelte:head>
       

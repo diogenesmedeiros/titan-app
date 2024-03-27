@@ -1,11 +1,12 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
+    import jquery from "jquery";
 
     let immobileData = [];
     let commentData = []
     let userData;
-    let commentProd, idProd;
+    let commentProd, idProd, respondTo
 
     export let data;
 
@@ -27,8 +28,6 @@
 
             const responseData = await response.json();
             interestData = responseData.message;
-
-
         } catch(error) {
             console.error(error);
         }
@@ -59,18 +58,16 @@
 
         const formData = {
 			comment: commentProd,
-			product_id: idProd
+			product_id: idProd,
 		}
 
         formData.product_id = data.id
-
-        console.log(formData)
 
         try {
             const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties/addComment`, {
                 method: 'POST',
                 headers: {
-                    'authorization': localStorage.getItem('token'),
+                    'authorization': sessionStorage.getItem('token'),
 					'Content-Type': 'application/json',
 					'Accept': 'application/json'
                 },
@@ -85,10 +82,12 @@
             newComment.setAttribute('class', 'mb-3 p-3 rounded form-shadow');
             newComment.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
 
+            jquery('#commentInput').val('')
+
             newComment.innerHTML = `
                 <div id="info">
                     <a href="/user/${userData.nickname}" class="d-flex align-items-center text-decoration-none">
-                        <img src="${userData.profile_picture}" width="40" class="rounded-circle me-2" alt="Avatar">
+                        <img src="${userData.profile_picture}" class="rounded-circle me-2" style="width: 40px;height: 40px;" alt="Avatar">
                         <p class="mb-0">${userData.nickname}</p>
                     </a>
                 </div>
@@ -114,7 +113,7 @@
             const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties/${data.id}`, {
                 method: 'GET',
                 headers: { 
-                    'authorization': localStorage.getItem('token'),
+                    'authorization': sessionStorage.getItem('token'),
                     'Content-Type': 'application/json'
                 }
             });
@@ -125,10 +124,37 @@
             const responseData = await response.json();
             immobileData = responseData.message;
 
+            console.log(immobileData)
+
             const responseComment = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties/comments/${immobileData[0].id}`)
 
             const responseCommentData = await responseComment.json()
             commentData = responseCommentData.message
+
+            var containerComments = document.getElementById('comments');
+            containerComments.innerHTML = '';
+
+            commentData.forEach(comment => {
+                var newComment = document.createElement('div');
+                newComment.setAttribute('class', 'mb-3 p-3 rounded form-shadow');
+                newComment.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+
+                newComment.innerHTML = `
+                    <div id="info">
+                        <a href="/user/${comment.creator.nickname}" class="d-flex align-items-center text-decoration-none">
+                            <img src="${comment.creator.profile_picture}" class="rounded-circle me-2" style="width: 40px;height: 40px;" alt="Avatar">
+                            <p class="mb-0">${comment.creator.nickname}</p>
+                        </a>
+                    </div>
+                    <div id="comment-text" class="m-3">
+                        <p>${comment.comment}</p>
+                    </div>
+                `;
+
+                containerComments.appendChild(newComment);
+            });
+
+            console.log(commentData)
 
             document.title = immobileData[0].title + " - Olha a casa aí"
         } catch (error) {
@@ -136,6 +162,12 @@
         }
     });
 </script>
+<style>
+    .img-r {
+        width: 40px;
+        height: 40px;
+    }
+</style>
 <div class="container form-shadow">
     <div class="row justify-content-center mt-5">
         <div class="col-md-8">
@@ -143,12 +175,12 @@
                 <div class="card-body">
                     {#if immobileData.length > 0}
                         {#each immobileData as immobile}
-                            <img class="img-fluid mb-3" src={immobile.photo_url_product} alt={immobile.nickname}>
+                            <img class="img-fluid mb-3" src={immobile.photo_url_product} alt={immobile.creator.nickname}>
                             <div class="d-flex justify-content-between align-items-center">
                                 <h2 class="fw-bold">{immobile.title}</h2>
                                 <div>
                                     {#if userData.uid != null}
-                                        {#if immobile.uid == userData.uid }
+                                        {#if immobile.creator.uid == userData.uid }
                                         <a href="/properties/update/{immobile.id}" class="btn btn-success me-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                                                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
@@ -173,22 +205,22 @@
                             <p class="fs-4 mb-3">Preço: <span class="text-success">R$ {immobile.price}</span></p>
                             <hr>
                             <div class="mb-3 p-3 rounded form-shadow" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
-                                <a href="/user/{immobile.nickname}" class="d-flex align-items-center text-decoration-none">
-                                    <img src="{immobile.profile_picture}" width="40" class="rounded-circle me-2" alt="Avatar">
-                                    <p class="mb-0">{immobile.nickname}</p>
+                                <a href="/user/{immobile.creator.nickname}" class="d-flex align-items-center text-decoration-none">
+                                    <img src="{immobile.creator.profile_picture}" width="40" class="rounded-circle me-2" alt="Avatar">
+                                    <p class="mb-0">{immobile.creator.nickname}</p>
                                 </a>
                             </div>
                             <hr>
                             <div id="comment-form">
-                                <p class="text-center fs-4 fw-bold">Comentarios</p>
+                                <p class="text-center fs-4 fw-bold">Comentários</p>
                                 {#if userData.uid != null }
                                 <form on:submit={commentHandlerSubmit}>
                                     <div class="mb-3">
                                         <div class="input-group">
                                             <div>
-                                                <img src="{userData.profile_picture}" width="40" class="rounded-circle me-2" alt="Avatar">
+                                                <img src="{userData.profile_picture}" class="rounded-circle me-2 img-r" alt="Avatar">
                                             </div>
-                                            <textarea type="text" class="form-control" style="height: 40px;" bind:value={commentProd}></textarea>
+                                            <textarea type="text" class="form-control" id="commentInput" style="height: 40px;" bind:value={commentProd}></textarea>
                                             <button class="input-group-text">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
                                                     <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
@@ -198,27 +230,9 @@
                                     </div>
                                 </form> 
                                 {/if}    
-                            </div>            
+                            </div> 
                             <hr>
-                            {#if commentData.length > 0}
-                                {#each commentData as comment}
-                                    <div id="comments">
-                                        <div class="mb-3 p-3 rounded form-shadow" style="box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
-                                            <div id="info">
-                                                <a href="/user/{comment.user_nickname}" class="d-flex align-items-center text-decoration-none">
-                                                    <img src="{comment.user_profile_picture}" width="40" class="rounded-circle me-2" alt="Avatar">
-                                                    <p class="mb-0">{comment.user_nickname}</p>
-                                                </a>
-                                            </div>
-                                            <div id="comment-text" class="m-3">
-                                                <p>{comment.comment}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {/each}
-                            {:else}
-                                <p class="text-center">Não há nada aqui</p>
-                            {/if}
+                            <div id="comments"></div>
                         {/each}
                     {:else}
                         <div class="text-center">
