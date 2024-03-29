@@ -1,6 +1,7 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
+    import { get } from "svelte/store";
 
     let userData = [];
     let immobileData = [];
@@ -64,7 +65,11 @@
                         {#each userData as user}
                         <div class="d-flex justify-content-center">
                             <div>
+                                {#if sessionStorage.getItem('token')}
+                                <a href="/user/upload"><img src="{user.profile_picture}" class="rounded-circle img-responsive mr-3" alt={user.nickname} style="width: 150px; height: 150px;"></a>
+                                {:else}
                                 <img src="{user.profile_picture}" class="rounded-circle img-responsive mr-3" alt={user.nickname} style="width: 150px; height: 150px;">
+                                {/if}
                                 <p class="fs-3 fw-bold text-center">{user.nickname}</p>
                                 <p class="text-center">{user.biography}</p>
                             </div>
@@ -72,26 +77,30 @@
                         <hr class="divider">
                         <div>
                             <p class="fs-4 fw-bold">Imoveis</p>
-                            {#if userData.length > 0}
-                            {#each userData as user}
-                            <div class="row row-cols-1 row-cols-md-3 g-4 form-shadow">
-                                <a href="/properties/{user.id}" class="w-25 col" style="text-decoration: none">
-                                    <div class="card form-shadow">
-                                        <img src={user.photo_url_product} class="card-img-top" alt={user.user_nickname}>
-                                        <div class="card-body">
-                                            <h5 class="card-title">{user.title}</h5>
-                                            <p class="card-text">{user.description}</p>
-                                            <hr>
-                                            <p class="card-text fs-5">R${user.price}</p>
-                                        </div>
-                                        <div class="card-footer">
-                                            <small class="text-body-secondary">{user.city} - {user.state}</small>
-                                        </div>
+                            {#if immobileData.length > 0}
+                                {#each immobileData as immobile}
+                                    <div class="row row-cols-1 row-cols-md-3 g-4 form-shadow">
+                                        <a href="/properties/{immobile.id}" class="w-25 col" style="text-decoration: none">
+                                            <div class="card form-shadow">
+                                                <img src={immobile.photo_url_product} class="card-img-top" alt={immobile.user_nickname}>
+                                                <div class="card-body">
+                                                    <h5 class="card-title">{immobile.title}</h5>
+                                                    <p class="card-text">{immobile.description}</p>
+                                                    <hr>
+                                                    <p class="card-text fs-5">R${immobile.price}</p>
+                                                </div>
+                                                <div class="card-footer">
+                                                    <small class="text-body-secondary">{immobile.city} - {immobile.state}</small>
+                                                </div>
+                                            </div>
+                                        </a>
                                     </div>
-                                </a>
-                            </div>
-                            {/each}
+                                {/each}
+                            {:else}
+                                <p>No immobile data available.</p>
+                            {/if}
                         </div>
+                        {/each}
                     {:else}
                         <div class="position-absolute top-50 start-50 translate-middle">
                             <div>

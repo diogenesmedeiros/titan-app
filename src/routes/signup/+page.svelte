@@ -42,30 +42,6 @@
 			console.error(error)
 		}
 	}
-
-/*onMount(() => {
-	jquery('#profile_picture_img').click(function() {
-  		jquery('.profile_picture').click();
-	})
-
-	jQuery(document).ready(function() {
-		var readyURL = function(input) {
-			if(input.files && input.files[0]) {
-				var reader = new FileReader();
-
-				reader.onload = function(e) {
-					jquery('#profile_picture_img').attr('src', e.target.result)
-				}
-
-				reader.readAsDataURL(input.files[0])
-			}
-		}
-
-		jquery('.profile_picture').on('change', function() {
-			readyURL(this)
-		})
-	})
-})*/
 </script>
 <svelte:head>
 	<title>Cadastro - Olha a casa aí</title>
