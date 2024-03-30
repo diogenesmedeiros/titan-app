@@ -27,7 +27,7 @@
                 document.title = userData[0].nickname + " - Titan"
 
                 try {
-                    const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties/${userData[0].nickname}`, {
+                    const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/user/${userData[0].uid}`, {
                         method: 'GET',
                         headers: { 
                             'authorization': sessionStorage.getItem('token'),

@@ -1,44 +1,129 @@
 <script>
     // @ts-nocheck
-    let title, description, photo_url_product, price, username_instagram, whatsapp_link;
+    import { onMount } from 'svelte';
 
-	async function addProductHandlerSubmit(event) {
-		event.preventDefault()
+    let title, description, price, state, city, username_instagram, whatsapp_link;
+	let formData;
 
-		const formData = {
-			title: title,
-			description: description,
-            photo_url_product: photo_url_product,
+    async function addProductHandlerSubmit(event) {
+        event.preventDefault();
+
+    	formData = {
+            title: title,
+            description: description,
             price: price,
-			username_instagram: username_instagram,
+            state: state,
+            city: city,
+            username_instagram: username_instagram,
             whatsapp_link: whatsapp_link
-		}
+        };
 
-		try {
-			const response = await fetch(`${localStorage.getItem('url')}/api/v1/immobile/addImmobile`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
+        try {
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/addPropertie`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                     'authorization': sessionStorage.getItem('token')
-				},
-				body: JSON.stringify(formData)
-			})
+                },
+                body: JSON.stringify(formData)
+            });
 
-			const data = await response.json();
+            if(response.ok) {
+                const data = await response.json();
 
-			console.log(data)
-		}catch (error) {
-			console.error(error)
-		}
+                console.log(data)
+
+                window.location.href = `/properties/update/upload/${data.id}`
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Função para obter os estados do IBGE
+    async function getStatesFromIBGE() {
+        try {
+            const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
+            const states = await response.json();
+            return states;
+        } catch (error) {
+            console.error('Erro ao obter estados:', error);
+            return [];
+        }
+    }
+
+    // Função para obter as cidades de um estado específico do IBGE
+    async function getCitiesFromIBGE(uf) {
+        try {
+            const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+            const cities = await response.json();
+            return cities;
+        } catch (error) {
+            console.error('Erro ao obter cidades:', error);
+            return [];
+        }
+    }
+
+    // Função para preencher o select de estados
+    async function populateStates() {
+        try {
+            const states = await getStatesFromIBGE();
+            const stateSelect = document.getElementById('state');
+            stateSelect.innerHTML = ''; // Limpa o conteúdo atual do select
+            states.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state.sigla;
+                option.textContent = state.nome;
+                stateSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro ao preencher estados:', error);
+        }
+    }
+
+    // Função para preencher o select de cidades com base no estado selecionado
+    async function populateCities() {
+        try {
+            const uf = document.getElementById('state').value; // Obtém o estado selecionado
+            const cities = await getCitiesFromIBGE(uf);
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = ''; // Limpa o conteúdo atual do select
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.nome;
+                option.textContent = city.nome;
+                citySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro ao preencher cidades:', error);
+        }
+    }
+
+	async function handlerChangeState() {
+		await populateCities();
+
+		state = document.getElementById('state').value;
 	}
+
+	function handlerChangeCity() {
+		city = document.getElementById('city').value;
+
+		console.log(state);
+		console.log(city);
+	}
+
+
+    onMount(() => {
+        populateStates();
+    });
 </script>
 <svelte:head>
 	<title>Adicionar imovel - Olha a casa aí</title>
 	<meta name="description" content="Add product this app" />
 </svelte:head>
-<div class="position-absolute top-50 start-50 translate-middle" style="margin-top: 150px;">
+<div class="position-absolute top-50 start-50 translate-middle" style="margin-top: 120px;">
 	<div class="shadow-lg p-3 mb-5 rounded form-shadow">
-		<form on:submit={addProductHandlerSubmit} class="row g-3">			  
+		<form on:submit={addProductHandlerSubmit} class="row g-3">	  
 			<div class="mb-3">
 				<label for="title" class="form-label">Titulo do imovel</label>
 				<div class="input-group">
@@ -61,31 +146,39 @@
 				<div class="input-group">
 					<span class="input-group-text">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
-							<path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"/>
-							<path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
-							<path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z"/>
-							<path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567"/>
-						  </svg>
+							<path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-1.218-.014c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
+						</svg>
 					</span>
 					<input type="number" class="form-control" id="price" bind:value={price} aria-describedby="priceHelp">
 				</div>
 				<div id="descriptionHelp" class="form-text">Dê um preço ao seu imovel.</div>
 			</div>
-			<div class="mb-3">
-				<label for="photo_url_product" class="form-label">Fotos do imovel</label>
+            <div class="col-md-6">
+                <label for="state" class="form-label">Selecione o seu estado</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                        </svg>
+                    </span>
+                    <select type="text" id="state" on:change={handlerChangeState} class="form-control" aria-describedby="stateHelp"></select>
+                </div>
+                <div id="stateHelp" class="form-text">Selecione em qual estado está localizado seu imovel.</div>
+            </div>
+			<div class="col-md-6">
+				<label for="city" class="form-label">Selecione a sua cidade</label>
 				<div class="input-group">
 					<span class="input-group-text">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
-							<path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
-							<path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1z"/>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+							<path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
 						</svg>
 					</span>
-					<input class="form-control" type="file" id="photo_url_product" accept="image/*" bind:value={photo_url_product} multiple>
+					<select type="text" id="city" on:change={handlerChangeCity} class="form-control" aria-describedby="cityHelp"></select>
 				</div>
-				<div id="photo_url_product" class="form-text">Deixe aqui algumas fotos do imovel.</div>
+				<div id="cityHelp" class="form-text">Selecione em qual cidade está localizado seu imovel.</div>
 			</div>
 			<div class="col-md-6">
-				<label for="username_instagram" class="form-label">Seu nome de usuario do instagram</label>
+				<label for="username_instagram" class="form-label">Seu nome de usuário do Instagram</label>
 				<div class="input-group">
 					<span class="input-group-text">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
