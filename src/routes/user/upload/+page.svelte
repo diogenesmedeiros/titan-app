@@ -1,7 +1,6 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import jQuery from 'jquery'
     import jquery from "jquery";
 
     let fileInput;
@@ -13,7 +12,7 @@
         formData.append('profile_picture', fileInput.files[0]);
 
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/upload`, {
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/upload`, {
                 method: 'POST',
                 headers: {
                     'authorization': sessionStorage.getItem('token'),

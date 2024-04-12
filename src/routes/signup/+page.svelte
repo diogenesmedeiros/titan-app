@@ -1,20 +1,31 @@
 <script>
 	// @ts-nocheck
-	import { onMount } from "svelte";
-	import jQuery from 'jquery'
-    import jquery from "jquery";
-
-	let username, surname, birth, phone, country, state, city, nickname, biography, gender, email, password;
+	let username, birth, phone, state, city, nickname, biography, gender, email, password;
 
 	async function signinHandlerSubmit(event) {
 		event.preventDefault()
 
+		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+
+		const appendAlert = (message, type) => {
+			const wrapper = document.createElement('div');
+
+			alertPlaceholder.innerHTML = ''
+			
+			wrapper.innerHTML = `
+			<div class="alert alert-${type} float-end m-4 z-3 alert-dismissible" role="alert">
+				<div>${message}</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			`;
+
+			alertPlaceholder.append(wrapper);
+		};
+
 		const formData = {
 			username: username,
-			surname: surname,
 			birth: birth,
 			phone: phone,
-			country: country,
 			state: state,
 			city: city,
 			nickname: nickname,
@@ -24,8 +35,10 @@
 			password: password
 		}
 
+		console.log(birth)
+
 		try {
-			const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/signup`, {
+			const response = await fetch(`${localStorage.getItem('url')}/api/v1/users`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -33,10 +46,28 @@
 				body: JSON.stringify(formData)
 			})
 
-			if (!response.ok) {
-                throw new Error('Erro ao carregar os dados');
+			if (response.ok) {
+				const data = await response.json();
+
+				document.getElementById('btn-submit').disabled = true;
+
+				if(data.message != undefined) {
+					appendAlert(data.message, 'success')
+				}
+
+				setTimeout(() => {
+					window.location.href='/signin'
+				}, 4000);
             }else{
-				window.location.href = '/signin'
+				const data = await response.json();
+
+				if(data.message != undefined) {
+					appendAlert(data.message, 'danger')
+
+					setTimeout(() => {
+						alertPlaceholder.innerHTML=''
+					}, 6000);
+				}
 			}
 		}catch (error) {
 			console.error(error)
@@ -47,16 +78,13 @@
 	<title>Cadastro - Olha a casa aí</title>
 	<meta name="description" content="About this app" />
 </svelte:head>
-<div class="position-absolute top-50 start-50 translate-middle">
-	<div class="shadow-lg p-3 mb-5 rounded form-shadow" style="margin-top: 470px;">
+<div id="liveAlertPlaceholder"></div>
+<div class="position-absolute top-50 start-50 translate-middle z-1">
+	<div class="shadow-lg p-3 mb-5 rounded form-shadow" style="margin-top: 35%;">
 		<form on:submit={signinHandlerSubmit} class="row g-3">
-			<div class="col-md-6">
+			<div class="col-12">
 				<label for="username" class="form-label">Seu nome</label>
 				<input type="text" id="username" class="form-control" bind:value={username}>
-			</div>
-			<div class="col-md-6">
-				<label for="surname" class="form-label">Sobrenome</label>
-				<input type="text" id="surname" class="form-control" bind:value={surname}>
 			</div>
 			<div class="col-md-6">
 				<label for="birth" class="form-label">Data de nascimento</label>
@@ -67,14 +95,10 @@
 				<input type="text" id="phone" class="form-control" bind:value={phone}>
 			</div>
 			<div class="col-md-6">
-				<label for="country" class="form-label">Cidade</label>
-				<input type="text" id="country" class="form-control" bind:value={country}>
-			</div>
-			<div class="col-md-6">
 				<label for="state" class="form-label">Estado</label>
 				<input type="text" id="state" class="form-control" bind:value={state}>
 			</div>
-			<div class="mb-3">
+			<div class="col-md-6">
 				<label for="city" class="form-label">Cidade</label>
 				<input type="text" id="city" class="form-control" bind:value={city}>
 			</div>
@@ -100,7 +124,7 @@
 				<label for="password" class="form-label">Senha</label>
 				<input type="password" id="password" class="form-control" bind:value={password}>
 			</div>
-			<button type="submit" class="btn btn-primary">Enviar</button>
+			<button type="submit" id="btn-submit" class="btn btn-primary">Enviar</button>
 		</form>
 	</div>
 </div>

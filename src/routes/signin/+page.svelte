@@ -6,31 +6,59 @@
 	async function signinHandlerSubmit(event) {
 		event.preventDefault()
 
+		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+
+		const appendAlert = (message, type) => {
+			const wrapper = document.createElement('div');
+			
+			wrapper.innerHTML = `
+			<div class="alert alert-${type} float-end m-4 alert-dismissible" role="alert">
+				<div>${message}</div>
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			`;
+
+			alertPlaceholder.append(wrapper);
+		};
+
 		const formData = {
 			email: email,
 			password: password
 		}
 		try {
-			const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/signin`, {
+			const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/auth/signin`, {
 				method: 'POST',
                 credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json',
 					'Accept': 'application/json',
-					//'X-CSRF-Token': document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN')).split('=')[1]
 				},
 				body: JSON.stringify(formData)
 			})
 
-			if (!response.ok) {
-                throw new Error('Erro ao carregar os dados');
-            }else{
+			if (response.ok) {
 				const data = await response.json();
+
+				document.getElementById('btn-submit').disabled = true;
+
+				appendAlert(data.message, 'success')
 
 				sessionStorage.setItem('token', data.token);
 				sessionStorage.setItem('user', JSON.stringify(data.user))
 
-				window.location.href='/'
+				setTimeout(() => {
+					window.location.href = '/'
+				}, 4000);
+            }else{
+				const data = await response.json();
+
+				if(data.message != undefined) {
+					appendAlert(data.message, 'danger')
+
+					setTimeout(() => {
+						alertPlaceholder.innerHTML='' // Remove o alerta após 10 segundos
+					}, 6000);
+				}
 			}
 		}catch (error) {
 			console.error(error)
@@ -41,6 +69,7 @@
 	<title>Entrar - Olha a casa aí</title>
 	<meta name="description" content="About this app" />
 </svelte:head>
+<div id="liveAlertPlaceholder"></div>
 <div class="position-absolute top-50 start-50 translate-middle">
 	<div class="shadow-lg p-3 mb-5 rounded form-shadow">
 		<form on:submit={signinHandlerSubmit}>
@@ -68,7 +97,7 @@
 				</div>
 			</div>
 			<div class="d-grid gap-2">
-				<button class="btn btn-primary" type="submit">Enviar</button>
+				<button class="btn btn-primary" id="btn-submit" type="submit">Enviar</button>
 			</div>
 		</form>
 	</div>

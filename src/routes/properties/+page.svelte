@@ -6,7 +6,7 @@
 
     onMount(async () => {
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/propertie/properties`, {
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties`, {
                 method: 'GET',
                 headers: { 
                     'authorization': localStorage.getItem('token'),
@@ -34,7 +34,7 @@
   <ul>
   {#each immobilesData as immobiles}
     <li>
-      <img width="150px" src={immobiles.photo_url_product} alt={immobiles.nickname}>
+      <img width="150px" src={immobiles.photo_url} alt={immobiles.nickname}>
       <p>{immobiles.description}</p>
       <p>R$ {immobiles.price}</p>
     </li>

@@ -1,16 +1,28 @@
 <script>
 	// @ts-nocheck
 	import jQuery from 'jquery'
-	import { startTokenExpirationTimer, tokenExpiration } from "../services/AuthService";
+	import { startTokenExpirationTimer, tokenExpiration, updateSession } from "../services/AuthService";
 	import { onMount } from "svelte";
-    import { updateSession } from '../services/UpdateSessionService';
 
-	let token, userData;
+	let token
+	let userData = [];
 	let theme, darkModeSwitches, darkModeSwitchLabel;
 
 	onMount(async () => {
 		token = sessionStorage.getItem('token')
-		userData = JSON.parse(sessionStorage.getItem('user'));
+
+		const response = await fetch(`${localStorage.getItem('url')}/api/v1/users`, {
+			method: 'GET',
+			headers: {
+				'authorization': sessionStorage.getItem('token'),
+                'Content-Type': 'application/json'
+			}
+		})
+
+		if(response.ok) {
+			const responseData = await response.json();
+			userData = responseData.message
+		}
 
 		startTokenExpirationTimer(86400000);
 		updateSession()
@@ -80,38 +92,41 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 				<li class="position-absolute top-0 end-0 py-2 px-3">
-					{#if token } 
-					<div class="btn-group">
-						<img src="{userData.profile_picture}" type="button" class="rounded-circle img-r dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" alt="Avatar">
-						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start">
-							<li>
-								<div class="container">
-									<div class="d-flex justify-content-center mb-3">
-										<a href="/user/{userData.nickname}" style="width: 100%;">
-											<div class="rounded shadow p-3" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px;">
-												<div class="d-flex align-items-center">
-													<img src="{userData.profile_picture}" class="rounded-circle img-responsive mr-3" alt="Avatar" style="width: 50px; height: 50px;">
-													<p class="mb-0 p-1">{userData.nickname}</p>
-												</div>											
-											</div>
-										</a>
+					{#if token }
+						{#each userData as user }
+						<div class="btn-group">
+							<img src="{user.profile_picture}" type="button" class="rounded-circle img-r dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" alt="Avatar">
+							<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start">
+								<li>
+									<div class="container">
+										<div class="d-flex justify-content-center mb-3">
+											<a href="/user/{user.nickname}" style="width: 100%;">
+												<div class="rounded shadow p-3" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px;">
+													<div class="d-flex align-items-center">
+														<img src="{user.profile_picture}" class="rounded-circle img-responsive mr-3" alt="Avatar" style="width: 50px; height: 50px;">
+														<p class="mb-0 p-1">{user.nickname}</p>
+													</div>											
+												</div>
+											</a>
+										</div>
 									</div>
-								</div>
-							</li>
-							<li><a class="dropdown-item" href="/user/settings/account">Gerenciamento de conta</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="/properties/interested/">Compras</a></li>
-							<li><a class="dropdown-item" href="/properties/rating">Suas avaliações</a></li>
-							<li><a class="dropdown-item" href="/properties/add">Começar a vender</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li class="p-1"><div class="form-check form-switch">
-								<input class="form-check-input dark-mode-switch" type="checkbox" role="switch">
-								<label class="form-check-label dark-mode-switch-label" for="dark-mode-switch">Queima olho</label>
-							</div></li>
-							<li><hr class="dropdown-divider"></li>
-							<li class="p-1"><div class="d-grid gap-2"><a class="btn btn-danger" href="/logout">Sair</a></div></li>
-						</ul>
-					</div>
+								</li>
+								<li><a class="dropdown-item" href="/user/settings/account">Gerenciamento de conta</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li><a class="dropdown-item" href="/properties/interested/">Compras</a></li>
+								<li><a class="dropdown-item" href="/properties/rating">Suas avaliações</a></li>
+								<li><a class="dropdown-item" href="/properties/sales">Gerenciar vendas</a></li>
+								<li><a class="dropdown-item" href="/properties/company">Gerenciar empresas</a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li class="p-1"><div class="form-check form-switch">
+									<input class="form-check-input dark-mode-switch" type="checkbox" role="switch">
+									<label class="form-check-label dark-mode-switch-label" for="dark-mode-switch">Queima olho</label>
+								</div></li>
+								<li><hr class="dropdown-divider"></li>
+								<li class="p-1"><div class="d-grid gap-2"><a class="btn btn-danger" href="/logout">Sair</a></div></li>
+							</ul>
+						</div>
+						{/each}
 					{:else}
 					<div class="btn-group">
 						<a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-current="page" href="/signin">Autenticação</a>

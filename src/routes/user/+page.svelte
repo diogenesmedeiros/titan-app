@@ -6,16 +6,15 @@
     
     onMount(async () => {
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/user/`, {
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users`, {
                 headers: { 
                     'authorization': sessionStorage.getItem('token')
                 }
             });
-            if (!response.ok) {
-              throw new Error('Erro ao carregar os dados');
+            if (response.ok) {
+              const data = await response.json();
+              userData = data.message;
             }
-            const data = await response.json();
-            userData = data.message;
         } catch (error) {
             console.error(error);
         }
