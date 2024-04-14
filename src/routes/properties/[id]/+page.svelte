@@ -241,12 +241,8 @@
                                 <hr>
                                 <p class="fw-bold fs-4">Informações do Imóvel</p>
                                 <div class="d-flex">
-                                    <p class="p-2 fw-bold">Rua:</p>
-                                    <p class="p-2">{immobile.road}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="p-2 fw-bold">Bairro:</p>
-                                    <p class="p-2">{immobile.neighborhood}</p>
+                                    <p class="p-2 fw-bold">Endereço:</p>
+                                    <p class="p-2">{immobile.address}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="p-2 fw-bold">Cidade e Estado:</p>
@@ -265,18 +261,18 @@
                                     <p class="p-2">{immobile.roomNumbers}</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="p-2 fw-bold">Ano de Construção:</p>
-                                    <p class="p-2">
-                                        {new Date(immobile.constructionYear).toLocaleDateString('pt-BR')}
-                                    </p>                                    
-                                </div>
-                                <div class="d-flex">
                                     <p class="p-2 fw-bold">Número de Banheiros:</p>
                                     <p class="p-2">{immobile.roomNumbers}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="p-2 fw-bold">Área Total (em metros quadrados):</p>
-                                    <p class="p-2">{immobile.totalArea}</p>
+                                    <p class="p-2">{immobile.totalArea}M²</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="p-2 fw-bold">Ano de Construção:</p>
+                                    <p class="p-2">
+                                        {new Date(immobile.constructionYear).toLocaleDateString('pt-BR')}
+                                    </p>                                    
                                 </div>
                                 <div class="d-flex">
                                     <p class="p-2 fw-bold">Comodidades Incluídas:</p>

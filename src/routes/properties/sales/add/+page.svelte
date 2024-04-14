@@ -2,35 +2,38 @@
     // @ts-nocheck
     import { onMount } from 'svelte';
 
-    let title, description, price, state, city, road, neighborhood, cep, typeProperty, roomNumbers, totalArea, constructionYear, includedAmenities, saleConditions, instagram, instagramContact, phone, whatsappContact;
+    let title, description, price, company, state, city, address, cep, typeProperty, roomNumbers, totalArea, constructionYear, includedAmenities, saleConditions, instagram, instagramContact, phone, whatsappContact;
 	let formData;
+
+    function alertMessage(message, type) {
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+        const wrapper = document.createElement('div');
+
+        alertPlaceholder.innerHTML = ''
+            
+        wrapper.innerHTML = `
+        <div class="alert alert-${type} float-end m-4 alert-dismissible z-3" role="alert">
+            <div>${message}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        `;
+
+        alertPlaceholder.append(wrapper);
+    }
 
     async function addProductHandlerSubmit(event) {
         event.preventDefault();
 
-        const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-
-        const appendAlert = (message, type) => {
-            const wrapper = document.createElement('div');
-            
-            wrapper.innerHTML = `
-            <div class="alert alert-${type} float-end m-4 alert-dismissible" role="alert">
-                <div>${message}</div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            `;
-
-            alertPlaceholder.append(wrapper);
-        };
+        company = document.getElementById('company').value
 
     	formData = {
             title: title,
             description: description,
             price: price,
+            company: company,
             state: state,
             city: city,
-            road: road,
-            neighborhood: neighborhood,
+            address: address,
             cep: cep,
             typeProperty: typeProperty,
             roomNumbers: roomNumbers,
@@ -56,7 +59,7 @@
                 const data = await response.json();
 
                 if(data.message != undefined) {
-					appendAlert(data.message, 'success')
+					alertMessage(data.message, 'success')
 
 					setTimeout(() => {
 						alertPlaceholder.innerHTML=''
@@ -70,7 +73,7 @@
                 const data = await response.json();
 
                 if(data.message != undefined) {
-                    appendAlert(data.message, 'danger')
+                    alertMessage(data.message, 'danger')
 
                     setTimeout(() => {
                         alertPlaceholder.innerHTML=''
@@ -141,6 +144,48 @@
         }
     }
 
+    async function getCompany() {
+        let company = []
+
+        try{
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties/company/propertiesAdd`, {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': sessionStorage.getItem('token')
+                }
+            })
+
+            if(response.ok) {
+                const dataResponse = await response.json()
+                company = dataResponse.message
+
+                if(dataResponse.message.length > 0) {
+                    const companySelect = document.getElementById('company')
+                    companySelect.innerHTML = ''
+
+                    company.forEach(company => {
+                        const option = document.createElement('option')
+                        option.value = company.id
+                        option.textContent = company.companyName
+
+                        companySelect.appendChild(option)
+                    })
+                }else{
+                    var inputs = document.querySelectorAll('.form-control');
+
+                    inputs.forEach(function(input) {
+                        input.disabled = true;
+                    });
+
+                    alertMessage('Você não pode adicionar um imovel se não tem uma empresa criada clique no link abaixo para cria uma. <a href="/properties/company/add">Clique aqui</a>', 'danger')
+                }
+            }
+        }catch (err) {
+            console.log(err)
+        }
+    }
+
 	async function handlerChangeState() {
 		await populateCities();
 
@@ -149,14 +194,11 @@
 
 	function handlerChangeCity() {
 		city = document.getElementById('city').value;
-
-		console.log(state);
-		console.log(city);
 	}
-
 
     onMount(() => {
         populateStates();
+        getCompany();
     });
 </script>
 <svelte:head>
@@ -197,6 +239,18 @@
 				</div>
 				<div id="descriptionHelp" class="form-text">Dê um preço ao seu imovel.</div>
 			</div>
+            <div class="col-12">
+				<label for="company" class="form-label">Selecione a empresa</label>
+				<div class="input-group">
+					<span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building-fill" viewBox="0 0 16 16">
+                            <path d="M3 0a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h3v-3.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V16h3a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1zm1 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5M4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5m2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5m2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+					</span>
+					<select type="text" id="company" class="form-control" aria-describedby="companyHelp"></select>
+				</div>
+				<div id="companyHelp" class="form-text">Selecione a empresa responsavel por esse imovel.</div>
+			</div>
             <div class="col-md-6">
                 <label for="state" class="form-label">Selecione o seu estado</label>
                 <div class="input-group">
@@ -221,31 +275,6 @@
 				</div>
 				<div id="cityHelp" class="form-text">Selecione em qual cidade está localizado seu imovel.</div>
 			</div>
-            <div class="col-md-6">
-				<label for="road" class="form-label">Rua</label>
-				<div class="input-group">
-					<span class="input-group-text">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pin-map-fill" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M3.1 11.2a.5.5 0 0 1 .4-.2H6a.5.5 0 0 1 0 1H3.75L1.5 15h13l-2.25-3H10a.5.5 0 0 1 0-1h2.5a.5.5 0 0 1 .4.2l3 4a.5.5 0 0 1-.4.8H.5a.5.5 0 0 1-.4-.8z"/>
-                            <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999z"/>
-                        </svg>
-					</span>
-					<input type="text" class="form-control" id="road" bind:value={road} aria-describedby="roadHelp">
-				</div>
-				<div id="roadHelp" class="form-text">Coloque a rua onde sua casa esta localizada.</div>
-			</div>
-			<div class="col-md-6">
-				<label for="neighborhood" class="form-label">Bairro</label>
-				<div class="input-group">
-					<span class="input-group-text">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-fill" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.3 1.3 0 0 0-.37.265.3.3 0 0 0-.057.09V14l.002.008.016.033a.6.6 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.6.6 0 0 0 .146-.15l.015-.033L12 14v-.004a.3.3 0 0 0-.057-.09 1.3 1.3 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465s-2.462-.172-3.34-.465c-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411"/>
-                        </svg>
-					</span>
-					<input type="text" class="form-control" id="neighborhood" bind:value={neighborhood} aria-describedby="neighborhoodHelp">
-				</div>
-				<div id="neighborhoodHelp" class="form-text">Coloque o bairro onde a sua casa esta localizada.</div>
-			</div>
             <div class="col-12">
 				<label for="cep" class="form-label">CEP</label>
 				<div class="input-group">
@@ -257,6 +286,19 @@
 					<input type="text" class="form-control" id="cep" bind:value={cep} aria-describedby="cepHelp">
 				</div>
 				<div id="titleHelp" class="form-text">Coloque o cep da rua onde a sua casa esta localizada.</div>
+			</div>
+            <div class="col-12">
+				<label for="address" class="form-label">Endereço</label>
+				<div class="input-group">
+					<span class="input-group-text">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pin-map-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M3.1 11.2a.5.5 0 0 1 .4-.2H6a.5.5 0 0 1 0 1H3.75L1.5 15h13l-2.25-3H10a.5.5 0 0 1 0-1h2.5a.5.5 0 0 1 .4.2l3 4a.5.5 0 0 1-.4.8H.5a.5.5 0 0 1-.4-.8z"/>
+                            <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999z"/>
+                        </svg>
+					</span>
+					<input type="text" class="form-control" id="address" bind:value={address} aria-describedby="addressHelp">
+				</div>
+				<div id="addressHelp" class="form-text">Coloque o endereço onde sua casa esta localizada.</div>
 			</div>
             <div class="col-12">
                 <label for="typeProperty" class="form-label">Tipo de propriedade</label>
@@ -306,19 +348,20 @@
 			</div>
             <div class="col-md-6">
                 <label for="title" class="form-label">Comodidades Incluídas</label>
-                <select id="comodidadesIncluidas" class="form-select" bind:value={includedAmenities}>
+                <select id="comodidadesIncluidas" class="form-control" bind:value={includedAmenities}>
                     <option value="Garagem">Garagem</option>
                     <option value="Jardim">Jardim</option>
                     <option value="Piscina">Piscina</option>
                     <option value="Varanda">Varanda</option>
                     <option value="Churrasqueira">Churrasqueira</option>
                     <option value="Garagem, Jardim Piscina, Varanda, Churrasqueira">Todas as opções</option>
+                    <option value="Não tem">Nenhuma das opções</option>
                 </select>
                 <div class="form-text">Selecione as comodidades Incluídas.</div>
             </div>
             <div class="col-md-6">
                 <label for="title" class="form-label">Condições de Venda</label>
-                <select id="condicoesVenda" class="form-select" bind:value={saleConditions}>
+                <select id="condicoesVenda" class="form-control" bind:value={saleConditions}>
                     <option value="À vista">À vista</option>
                     <option value="Financiado">Financiado</option>
                     <option value="Aluguel com opção de compra">Aluguel com opção de compra</option>

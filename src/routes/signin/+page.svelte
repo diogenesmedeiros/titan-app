@@ -3,23 +3,24 @@
 	let email;
 	let password;
 
+	function alerts(message, type) {
+		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+		const wrapper = document.createElement('div');
+
+		alertPlaceholder.innerHTML = ''
+
+		wrapper.innerHTML = `
+		<div class="alert alert-${type} float-end m-4 z-3 alert-dismissible" role="alert">
+			<div>${message}</div>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+		`;
+
+		alertPlaceholder.append(wrapper);
+	}
+
 	async function signinHandlerSubmit(event) {
 		event.preventDefault()
-
-		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-
-		const appendAlert = (message, type) => {
-			const wrapper = document.createElement('div');
-			
-			wrapper.innerHTML = `
-			<div class="alert alert-${type} float-end m-4 alert-dismissible" role="alert">
-				<div>${message}</div>
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			</div>
-			`;
-
-			alertPlaceholder.append(wrapper);
-		};
 
 		const formData = {
 			email: email,
@@ -41,7 +42,7 @@
 
 				document.getElementById('btn-submit').disabled = true;
 
-				appendAlert(data.message, 'success')
+				alerts(data.message, 'success')
 
 				sessionStorage.setItem('token', data.token);
 				sessionStorage.setItem('user', JSON.stringify(data.user))
@@ -53,7 +54,7 @@
 				const data = await response.json();
 
 				if(data.message != undefined) {
-					appendAlert(data.message, 'danger')
+					alerts(data.message, 'danger')
 
 					setTimeout(() => {
 						alertPlaceholder.innerHTML='' // Remove o alerta após 10 segundos

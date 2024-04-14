@@ -2,25 +2,24 @@
 	// @ts-nocheck
 	let username, birth, phone, state, city, nickname, biography, gender, email, password;
 
+	function alerts(message, type) {
+		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+		const wrapper = document.createElement('div');
+
+		alertPlaceholder.innerHTML = ''
+
+		wrapper.innerHTML = `
+		<div class="alert alert-${type} float-end m-4 z-3 alert-dismissible" role="alert">
+			<div>${message}</div>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+		`;
+
+		alertPlaceholder.append(wrapper);
+	}
+
 	async function signinHandlerSubmit(event) {
 		event.preventDefault()
-
-		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
-
-		const appendAlert = (message, type) => {
-			const wrapper = document.createElement('div');
-
-			alertPlaceholder.innerHTML = ''
-			
-			wrapper.innerHTML = `
-			<div class="alert alert-${type} float-end m-4 z-3 alert-dismissible" role="alert">
-				<div>${message}</div>
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			</div>
-			`;
-
-			alertPlaceholder.append(wrapper);
-		};
 
 		const formData = {
 			username: username,
@@ -52,7 +51,7 @@
 				document.getElementById('btn-submit').disabled = true;
 
 				if(data.message != undefined) {
-					appendAlert(data.message, 'success')
+					alerts(data.message, 'success')
 				}
 
 				setTimeout(() => {
@@ -62,7 +61,7 @@
 				const data = await response.json();
 
 				if(data.message != undefined) {
-					appendAlert(data.message, 'danger')
+					alerts(data.message, 'danger')
 
 					setTimeout(() => {
 						alertPlaceholder.innerHTML=''
