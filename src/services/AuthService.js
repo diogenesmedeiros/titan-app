@@ -27,13 +27,11 @@ export async function updateSession() {
                 }
             });
     
-            if (!response.ok) {
-                redirectRoute('logout')
-                throw new Error('Erro ao carregar os dados');
-            }else{
+            if (response.ok) {
                 const data = await response.json();
-    
                 sessionStorage.setItem('user', JSON.stringify(data.message[0]))
+            }else{
+                redirectRoute('logout')
             }
         }catch(error) {
             console.log(error)

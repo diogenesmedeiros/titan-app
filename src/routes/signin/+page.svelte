@@ -27,7 +27,7 @@
 			password: password
 		}
 		try {
-			const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/auth/signin`, {
+			const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/signin`, {
 				method: 'POST',
                 credentials: 'include',
 				headers: {
@@ -58,7 +58,7 @@
 
 					setTimeout(() => {
 						alertPlaceholder.innerHTML='' // Remove o alerta após 10 segundos
-					}, 6000);
+					}, 1500);
 				}
 			}
 		}catch (error) {

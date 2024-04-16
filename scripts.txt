@@ -9,5 +9,3 @@ github para não ocorrer error no vercel
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
 		"lint": "eslint ."
 	},
-
-	esadsad

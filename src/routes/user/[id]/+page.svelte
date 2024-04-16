@@ -1,7 +1,6 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import { get } from "svelte/store";
 
     let userData = [];
     let immobileData = [];
@@ -66,37 +65,6 @@
         }
     })
 </script>
-<style>
-    .rating {
-        display: inline-block;
-        unicode-bidi: bidi-override;
-        direction: rtl;
-    }
-
-    .rating input {
-        display: none;
-    }
-
-    .rating label {
-        float: right;
-        padding: 0 1px;
-        cursor: pointer;
-        font-size: 24px;
-    }
-
-    .rating label:before {
-        content: "\2605";
-    }
-
-    .rating input:checked ~ label:before {
-        color: orange;
-    }
-
-    .rating:not(:checked) label:hover:before,
-    .rating:not(:checked) label:hover ~ label:before {
-        color: orange;
-    }
-</style>
 <svelte:head>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
@@ -128,14 +96,6 @@
                                         {user.city} - {user.state}
                                     </p>
                                 </div>
-                                <div class="rating">
-                                    <input type="radio" id="star5" name="rating" value="5"><label for="star5"></label>
-                                    <input type="radio" id="star4" name="rating" value="4"><label for="star4"></label>
-                                    <input type="radio" id="star3" name="rating" value="3"><label for="star3"></label>
-                                    <input type="radio" id="star2" name="rating" value="2"><label for="star2"></label>
-                                    <input type="radio" id="star1" name="rating" value="1"><label for="star1"></label>
-                                  </div>
-                                  
                             </div>
                         </div>
                         <hr class="divider">
@@ -146,7 +106,7 @@
                                     <div class="row row-cols-1 row-cols-md-3 g-4 form-shadow">
                                         <a href="/properties/{immobile.id}" class="w-25 col" style="text-decoration: none">
                                             <div class="card form-shadow">
-                                                <img src={immobile.photo_url_product} class="card-img-top" alt={immobile.user_nickname}>
+                                                <img src={immobile.photo_url} class="card-img-top" alt={immobile.user_nickname}>
                                                 <div class="card-body">
                                                     <h5 class="card-title">{immobile.title}</h5>
                                                     <p class="card-text">{immobile.description}</p>
