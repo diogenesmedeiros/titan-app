@@ -37,7 +37,7 @@
 		console.log(birth)
 
 		try {
-			const response = await fetch(`${localStorage.getItem('url')}/api/v1/users`, {
+			const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/signup`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -55,7 +55,7 @@
 				}
 
 				setTimeout(() => {
-					window.location.href='/signin'
+					window.location.href='/auth/signin'
 				}, 4000);
             }else{
 				const data = await response.json();

@@ -47,9 +47,15 @@
 				sessionStorage.setItem('token', data.token);
 				sessionStorage.setItem('user', JSON.stringify(data.user))
 
-				setTimeout(() => {
-					window.location.href = '/'
-				}, 4000);
+				if(data.otp_enabled) {
+					setTimeout(() => {
+						window.location.href = '/auth/otp/code'
+					}, 1200);
+				}else{
+					setTimeout(() => {
+						window.location.href = '/'
+					}, 1200);
+				}
             }else{
 				const data = await response.json();
 

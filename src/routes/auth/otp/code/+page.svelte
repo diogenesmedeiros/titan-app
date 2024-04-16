@@ -21,7 +21,7 @@
     async function verify(event) {
         event.preventDefault()
 
-        const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/verify`, {
+        const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/otp/code`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -33,6 +33,10 @@
             const data = await response.json()
 
             alerts(`${data.message}`, 'success')
+
+            setTimeout(() => {
+				window.location.href = '/'
+			}, 1200);
         }else{
             const data = await response.json()
 

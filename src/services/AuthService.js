@@ -31,18 +31,18 @@ export async function updateSession() {
                 const data = await response.json();
                 sessionStorage.setItem('user', JSON.stringify(data.message[0]))
             }else{
-                redirectRoute('logout')
+                redirectRoute('auth/logout')
             }
         }catch(error) {
             console.log(error)
         }
     }else{
-        redirectRoute('signin')
+        redirectRoute('auth/signin')
     }
 }
 
 function redirectRoute(path) {
-    const pathURI = window.location.pathname.split('/')[1];
+    const pathURI = window.location.pathname.split('/auth/')[1];
     const pathName = ['signin', 'signup'];
 
     if (!pathName.includes(pathURI)) {

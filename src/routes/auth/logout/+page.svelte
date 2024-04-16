@@ -3,6 +3,6 @@
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("user");
 
-        window.location.href = '/signin'
+        window.location.href = '/auth/signin'
     }
 </script>

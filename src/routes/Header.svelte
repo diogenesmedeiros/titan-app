@@ -123,7 +123,7 @@
 									<label class="form-check-label dark-mode-switch-label" for="dark-mode-switch">Queima olho</label>
 								</div></li>
 								<li><hr class="dropdown-divider"></li>
-								<li class="p-1"><div class="d-grid gap-2"><a class="btn btn-danger" href="/logout">Sair</a></div></li>
+								<li class="p-1"><div class="d-grid gap-2"><a class="btn btn-danger" href="/auth/logout">Sair</a></div></li>
 							</ul>
 						</div>
 						{/each}
@@ -131,8 +131,8 @@
 					<div class="btn-group">
 						<a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-current="page" href="/signin">Autenticação</a>
 						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start">
-							<li><a class="dropdown-item" href="/signin">Entrar na conta</a></li>
-						  	<li><a class="dropdown-item" href="/signup">Criar conta</a></li>
+							<li><a class="dropdown-item" href="/auth/signin">Entrar na conta</a></li>
+						  	<li><a class="dropdown-item" href="/auth/signup">Criar conta</a></li>
 						</ul>
 					</div>
 					{/if}
