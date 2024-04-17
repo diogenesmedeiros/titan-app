@@ -6,6 +6,7 @@
         const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/otp/qr`, {
             method: 'GET',
             headers: {
+                'authorization': sessionStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         })

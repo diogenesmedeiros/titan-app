@@ -45,7 +45,6 @@
 				alerts(data.message, 'success')
 
 				sessionStorage.setItem('token', data.token);
-				sessionStorage.setItem('user', JSON.stringify(data.user))
 
 				if(data.otp_enabled) {
 					setTimeout(() => {

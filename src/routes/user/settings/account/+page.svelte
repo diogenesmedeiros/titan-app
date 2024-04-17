@@ -5,6 +5,8 @@
 
     let userData = [];
 
+    let nickname_update, biography_update, email_update, phone_update, instagram_update
+
     function showSection(sectionId) {
         jquery('.hidden').hide();
         jquery('#' + sectionId).show();
@@ -156,7 +158,7 @@
       <div class="list-group">
         <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('edit-account')}>Editar Conta</button>
         <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('edit-personal-data')}>Editar Dados Pessoais</button>
-        <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('site-settings')}>Configurações do Site</button>
+        <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('site-settings')}>Segurança</button>
         <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('privacy-data-deletion')}>Privacidade e Exclusão de Dados</button>
       </div>
     </div>
@@ -186,13 +188,9 @@
                         <label for="nickname" class="form-label">Breve descrição</label>
                         <textarea type="text" id="nickname" class="form-control">{user.biography}</textarea>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-12 mb-3">
                         <label for="inputEmail4" class="form-label">Email</label>
                         <input type="email" class="form-control" value="{user.email}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="inputPassword4" class="form-label">Senha</label>
-                        <input type="password" class="form-control">
                     </div>
                 </div>
                 <div class="row">

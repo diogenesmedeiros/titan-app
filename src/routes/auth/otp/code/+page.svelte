@@ -24,6 +24,7 @@
         const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/otp/code`, {
             method: 'POST',
             headers: {
+                'authorization': sessionStorage.getItem('token'),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ token: otp })

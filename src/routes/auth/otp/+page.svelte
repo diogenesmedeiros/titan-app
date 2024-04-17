@@ -22,7 +22,8 @@
         const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/otp/enabled`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'authorization': sessionStorage.getItem('token'),
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({ enable_otp: enabledOtp })
         })
@@ -31,6 +32,8 @@
             const responseData = await response.json()
 
             alerts(responseData.message, "success")
+
+            alert(responseData.message)
 
             window.location.href="/auth/otp/qr"
         }else{
