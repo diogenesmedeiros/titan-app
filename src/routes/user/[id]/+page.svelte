@@ -24,7 +24,7 @@
         });
 
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/${data.id}`, {
+            const response = await fetch(`http://localhost:8081/api/v1/users/${data.id}`, {
                 method: 'GET',
                 headers: { 
                     'authorization': sessionStorage.getItem('token'),
@@ -36,10 +36,10 @@
                 const responseData = await response.json();
                 userData = responseData.message;
 
-                document.title = userData[0].nickname + " - Titan"
+                document.title = userData[0].nickname + " - Olha a casa ai"
 
                 try {
-                    const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties/user/${userData[0].uid}`, {
+                    const response = await fetch(`http://localhost:8081/api/v1/properties/user/${userData[0].uid}`, {
                         method: 'GET',
                         headers: { 
                             'authorization': sessionStorage.getItem('token'),
@@ -52,10 +52,6 @@
 
                     const responseData = await response.json();
                     immobileData = responseData.message;
-
-                    console.log(immobileData)
-
-                    document.title = immobileData[0].title + " - Olha a casa aí"
                 } catch (error) {
                     console.error(error);
                 }
@@ -66,46 +62,44 @@
     })
 </script>
 <svelte:head>
-	<meta name="description" content="Svelte demo app" />
+    <meta name="description" content="Svelte demo app" />
 </svelte:head>
-<div class="container form-shadow">
+
+<div class="container">
     <div class="row justify-content-center mt-5">
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-body">
                     {#if userData.length > 0}
                         {#each userData as user}
-                        <div class="d-flex justify-content-center">
+                        <div class="text-center">
+                            {#if sessionStorage.getItem('token')}
                             <div>
-                                {#if sessionStorage.getItem('token')}
-                                <div class="text-center">
-                                    <a href="/user/settings/account"><img src="{user.profile_picture}" class="rounded-circle img-responsive mr-3" alt={user.nickname} style="width: 150px; height: 150px;"></a>
-                                </div>
-                                {:else}
-                                <div class="text-center">
-                                    <img src="{user.profile_picture}" class="rounded-circle img-responsive mr-3" alt={user.nickname} style="width: 150px; height: 150px;">
-                                </div>
-                                {/if}
-                                <p class="fs-3 fw-bold text-center">{user.username}</p>
-                                <p class="text-center">{user.biography}</p>
-                                <div class="text-center">
-                                    <p class="badge text-bg-primary">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                                        </svg>
-                                        {user.city} - {user.state}
-                                    </p>
-                                </div>
+                                <a href="/user/settings/account">
+                                    <img src="{user.profile_picture}" class="rounded-circle img-fluid mb-3" alt={user.nickname} style="width: 150px; height: 150px;">
+                                </a>
                             </div>
+                            {:else}
+                            <div>
+                                <img src="{user.profile_picture}" class="rounded-circle img-fluid mb-3" alt={user.nickname} style="width: 150px; height: 150px;">
+                            </div>
+                            {/if}
+                            <p class="fs-3 fw-bold">{user.username}</p>
+                            <p>{user.biography}</p>
+                            <p class="badge text-bg-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                                </svg>
+                                {user.city} - {user.state}
+                            </p>
                         </div>
                         <hr class="divider">
-                        <div>
-                            <p class="fs-4 fw-bold">Imoveis</p>
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
                             {#if immobileData.length > 0}
                                 {#each immobileData as immobile}
-                                    <div class="row row-cols-1 row-cols-md-3 g-4 form-shadow">
-                                        <a href="/properties/{immobile.id}" class="w-25 col" style="text-decoration: none">
-                                            <div class="card form-shadow">
+                                    <div class="col">
+                                        <a href="/properties/{immobile.id}" class="text-decoration-none">
+                                            <div class="card h-100 shadow">
                                                 <img src={immobile.photo_url} class="card-img-top" alt={immobile.user_nickname}>
                                                 <div class="card-body">
                                                     <h5 class="card-title">{immobile.title}</h5>
@@ -121,7 +115,9 @@
                                     </div>
                                 {/each}
                             {:else}
-                                <center><p>Não há nada aqui 👀</p></center>
+                                <div class="col">
+                                    <center><p>Não há nada aqui 👀</p></center>
+                                </div>
                             {/if}
                         </div>
                         {/each}

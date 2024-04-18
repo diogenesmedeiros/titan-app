@@ -30,7 +30,7 @@
 			alertPlaceholder.append(wrapper);
 		};
 
-        const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties/company/add`, {
+        const response = await fetch('http://localhost:8081/api/v1/company/', {
             method: 'post',
             headers: {
                 'authorization': sessionStorage.getItem('token'),

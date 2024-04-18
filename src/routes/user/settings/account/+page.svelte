@@ -5,11 +5,85 @@
 
     let userData = [];
 
-    let nickname_update, biography_update, email_update, phone_update, instagram_update
+    let nickname_update, biography_update, email_update, phone_update, instagram_update, enabledOtp
+
+    function alerts(message, type) {
+		const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+		const wrapper = document.createElement('div');
+
+		alertPlaceholder.innerHTML = ''
+
+		wrapper.innerHTML = `
+		<div class="alert alert-${type} float-end m-4 z-3 alert-dismissible" role="alert">
+			<div>${message}</div>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+		`;
+
+		alertPlaceholder.append(wrapper);
+	}
 
     function showSection(sectionId) {
         jquery('.hidden').hide();
         jquery('#' + sectionId).show();
+    }
+
+    async function updateAccount(event) {
+        event.preventDefault()
+        
+        const formData = {
+            nickname: nickname_update,
+            biography: biography_update,
+            email: email_update,
+            phone: phone_update,
+            instagram: instagram_update
+        }
+
+        try {
+            const response = await fetch('http://localhost:8081/api/v1/users/update', {
+                method: 'POST',
+                headers: {
+                    'authorization': sessionStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+
+            if(response.ok) {
+                const data = await response.json()
+                
+                alerts(data.message, 'success')
+            }else{
+                const data = await response.json()
+
+                alerts(data.message, 'danger')
+            }
+        }catch(err) {
+            alerts(err, 'danger')
+        }
+    }
+
+    async function enableOTP() {
+        const response = await fetch('http://localhost:8081/api/v1/auth/otp/enabled', {
+            method: 'POST',
+            headers: {
+                'authorization': sessionStorage.getItem('token'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ enable_otp: enabledOtp })
+        })
+
+        if(response.ok) {
+            const responseData = await response.json()
+
+            alerts(responseData.message, "success")
+
+            window.location.href="/auth/otp/qr"
+        }else{
+            const responseData = await response.json()
+
+            alerts(responseData.message, "danger")
+        }
     }
 
     // Função para obter os estados do IBGE
@@ -152,7 +226,8 @@
     <title>Fazer upload de uma foto - Olha a casa aí</title>
     <meta name="description" content="About this app" />
 </svelte:head>
-<div class="container mt-5 form-shadow">
+<div id="liveAlertPlaceholder"></div>
+<div class="container mt-5 z-1 form-shadow">
   <div class="row">
     <div class="col-md-3">
       <div class="list-group">
@@ -167,7 +242,7 @@
         {#each userData as user}
         <div id="edit-account" class="hidden border rounded p-4">
             <h2 class="mb-3">Editar Conta</h2>
-            <form enctype="multipart/form-data" class="row g-3">
+            <form class="row g-3" on:submit={updateAccount}>
                 <div class="md-6">
                     <div class="text-center">
                         <img src="{user.profile_picture}" id="profile_picture_img" class="rounded-circle" alt="Avatar">
@@ -182,25 +257,25 @@
                 <div class="row">
                     <div class="col-12 mb-3">
                         <label for="nickname" class="form-label">Seu nome de perfil</label>
-                        <input type="text" id="nickname" class="form-control" value="{user.nickname}">
+                        <input type="text" id="nickname" class="form-control" value="{user.nickname}" bind:this={nickname_update}>
                     </div>
                     <div class="col-12 mb-3">
                         <label for="nickname" class="form-label">Breve descrição</label>
-                        <textarea type="text" id="nickname" class="form-control">{user.biography}</textarea>
+                        <textarea type="text" id="nickname" class="form-control" bind:this={biography_update}>{user.biography}</textarea>
                     </div>
                     <div class="col-12 mb-3">
                         <label for="inputEmail4" class="form-label">Email</label>
-                        <input type="email" class="form-control" value="{user.email}">
+                        <input type="email" class="form-control" value="{user.email}" bind:this={email_update}>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="phoneNumber" class="form-label">Número de telefone</label>
-                        <input type="text" class="form-control" value="{user.phone}">
+                        <input type="text" class="form-control" value="{user.phone}" bind:this={phone_update}>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="instagram" class="form-label">Instagram</label>
-                        <input type="text" class="form-control" value="{user.instagram}">
+                        <input type="text" class="form-control" value="{user.instagram}" bind:this={instagram_update}>
                     </div>
                     <div class="col-md-6 mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="usePhone">
@@ -273,8 +348,20 @@
         </div>
         <div id="site-settings" class="hidden border rounded p-3">
             <!-- Conteúdo para configurações do site -->
-            <h2>Configurações do Site</h2>
-            <p>Aqui você pode configurar o site.</p>
+            <h2>Segurança</h2>
+            <p>Aqui você pode ativar autenticação de dois fatores.</p>
+            <p class="fs-3 fw-bold">Ativar autenticação em dois fatores</p>
+            <form class="form-shadow" on:submit={enableOTP}>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="enabledOTP" bind:checked={enabledOtp}>
+                        <label class="form-check-label" for="enabledOTP">Ativar autenticação em dois fatores</label>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
         </div>
         <div id="privacy-data-deletion" class="hidden border rounded p-3">
             <!-- Conteúdo para privacidade e exclusão de dados -->

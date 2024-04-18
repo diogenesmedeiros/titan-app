@@ -3,7 +3,7 @@
     import { onMount } from "svelte";
 
     async function qrCode() {
-        const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/otp/qr`, {
+        const response = await fetch('http://localhost:8081/api/v1/auth/otp/qr', {
             method: 'GET',
             headers: {
                 'authorization': sessionStorage.getItem('token'),

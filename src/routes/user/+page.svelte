@@ -6,7 +6,7 @@
     
     onMount(async () => {
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users`, {
+            const response = await fetch('http://localhost:8081/api/v1/users', {
                 headers: { 
                     'authorization': sessionStorage.getItem('token')
                 }

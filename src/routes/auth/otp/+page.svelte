@@ -19,7 +19,7 @@
 	}
 
     async function enableOTP() {
-        const response = await fetch(`${localStorage.getItem('url')}/api/v1/auth/otp/enabled`, {
+        const response = await fetch('http://localhost:8081/api/v1/auth/otp/enabled', {
             method: 'POST',
             headers: {
                 'authorization': sessionStorage.getItem('token'),
@@ -33,9 +33,7 @@
 
             alerts(responseData.message, "success")
 
-            alert(responseData.message)
-
-            window.location.href="/auth/otp/qr"
+            window.location.href="/auth/logout"
         }else{
             const responseData = await response.json()
 

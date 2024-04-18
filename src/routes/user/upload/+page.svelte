@@ -12,7 +12,7 @@
         formData.append('profile_picture', fileInput.files[0]);
 
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/upload`, {
+            const response = await fetch('http://localhost:8081/api/v1/users/upload', {
                 method: 'POST',
                 headers: {
                     'authorization': sessionStorage.getItem('token'),

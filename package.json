@@ -17,6 +17,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.0",
+		"dotenv": "^16.4.5",
 		"eslint": "^8.56.0",
 		"eslint-plugin-svelte": "^2.35.1",
 		"svelte": "^4.2.7",
@@ -27,6 +28,7 @@
 	"type": "module",
 	"dependencies": {
 		"jquery": "^3.7.1",
+		"js-cookie": "^3.0.5",
 		"svelte-persisted-store": "^0.9.1"
 	}
 }

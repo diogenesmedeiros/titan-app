@@ -5,7 +5,7 @@
     let companyData = []
 
     onMount(async () => {
-        const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties/company/user/all`, {
+        const response = await fetch('http://localhost:8081/api/v1/company/user/all', {
             method: 'get',
             headers: {
                 'authorization': sessionStorage.getItem('token'),

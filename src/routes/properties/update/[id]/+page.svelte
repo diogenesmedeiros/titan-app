@@ -1,13 +1,9 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import jquery from "jquery";
 
     let immobileData = [];
-    let commentData = [];
     let userData;
-    let commentProd, idProd;
-    let interestData;
 
     export let data;
 
@@ -28,13 +24,40 @@
         alertPlaceholder.append(wrapper);
     }
 
+    async function deleteImmobile() {
+        const id_immobile = {
+            id: data.id
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8081/api/v1/properties/${id_immobile.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'authorization': sessionStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(id_immobile)
+            })
+
+            const data = await response.json()
+
+            if(response.ok) {
+                alerts(data.message, 'success')
+            }else{
+                alerts(data.message, 'danger')
+            }
+        } catch(err) {
+            alerts(err, 'danger')
+        }
+    }
+
     onMount(async () => {
         if(sessionStorage.getItem('user') != null) 
             userData = JSON.parse(sessionStorage.getItem('user'));
         else
             userData = null
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties/${data.id}`, {
+            const response = await fetch(`http://localhost:8081/api/v1/properties/${data.id}`, {
                 method: 'GET',
                 headers: { 
                     'authorization': sessionStorage.getItem('token'),
@@ -64,7 +87,7 @@
     }
 </style>
 <div id="liveAlertPlaceholder"></div>
-<div class="container form-shadow z-1 position-absolute start-50 translate-middle" style="top: 100%;">
+<div class="container form-shadow z-1 position-absolute start-50 translate-middle" style="top: 110%;">
     <div class="row justify-content-center mt-5">
         <div class="col-md-8 form-shadow">
             <div class="card shadow form-shadow">
@@ -123,6 +146,11 @@
                                 <div class="d-flex">
                                     <p class="p-2 fw-bold">Comodidades Incluídas:</p>
                                     <p class="p-2">{immobile.includedAmenities}</p>
+                                </div>
+                                <hr>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary">Confirma</button>
+                                    <button type="button" class="btn btn-danger" on:click={deleteImmobile}>Excluir</button>
                                 </div>
                             </div>                            
                         {/each}

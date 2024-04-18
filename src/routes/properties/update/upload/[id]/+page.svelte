@@ -15,7 +15,7 @@
         formData.append('midia', fileInput.files[0]);
 
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/properties/upload/${data.id}`, {
+            const response = await fetch(`http://localhost:8081/api/v1/properties/upload/${data.id}`, {
                 method: 'POST',
                 headers: {
                     'authorization': sessionStorage.getItem('token'),

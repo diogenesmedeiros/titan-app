@@ -1,8 +1,9 @@
 <script>
 	// @ts-nocheck
 	import jQuery from 'jquery'
-	import { startTokenExpirationTimer, tokenExpiration, updateSession } from "../services/AuthService";
 	import { onMount } from "svelte";
+
+	import { startTokenExpirationTimer, tokenExpiration, updateSession } from "../services/AuthService";
 
 	let token
 	let userData = [];
@@ -11,7 +12,7 @@
 	onMount(async () => {
 		token = sessionStorage.getItem('token')
 
-		const response = await fetch(`${localStorage.getItem('url')}/api/v1/users`, {
+		const response = await fetch('http://localhost:8081/api/v1/users', {
 			method: 'GET',
 			headers: {
 				'authorization': sessionStorage.getItem('token'),
@@ -32,8 +33,6 @@
 				console.log('O token JWT expirou.');
 			}
 		});
-
-		localStorage.setItem('url', 'http://localhost:8081')
 
 		jQuery(document).ready(function(){
 			theme = localStorage.getItem("theme");
@@ -83,7 +82,7 @@
 		height: 40px;
 	}
 </style>
-<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom border-body">
+<nav class="navbar navbar-expand-lg bg-body-tertiary z-3 border-bottom border-body">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/">Olha a casa aí</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
