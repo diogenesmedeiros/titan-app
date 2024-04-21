@@ -82,71 +82,65 @@
 		height: 40px;
 	}
 </style>
-<nav class="navbar navbar-expand-lg bg-body-tertiary z-3 border-bottom border-body">
+<nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary border-bottom border-body">
 	<div class="container-fluid">
-		<a class="navbar-brand" href="/">Olha a casa aí</a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				<li class="position-absolute top-0 end-0 py-2 px-3">
-					{#if token }
-						{#each userData as user }
-						<div class="btn-group">
-							<img src="{user.profile_picture}" type="button" class="rounded-circle img-r dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" alt="Avatar">
-							<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start">
-								<li>
-									<div class="container">
-										<div class="d-flex justify-content-center mb-3">
-											<a href="/user/{user.nickname}" style="width: 100%;">
-												<div class="rounded shadow p-3" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 10px;">
-													<div class="d-flex align-items-center">
-														<img src="{user.profile_picture}" class="rounded-circle img-responsive mr-3" alt="Avatar" style="width: 50px; height: 50px;">
-														<p class="mb-0 p-1">{user.nickname}</p>
-													</div>											
-												</div>
-											</a>
-										</div>
-									</div>
-								</li>
-								<li><a class="dropdown-item" href="/user/settings/account">Gerenciamento de conta</a></li>
-								<li><hr class="dropdown-divider"></li>
-								<li><a class="dropdown-item" href="/properties/interested/">Compras</a></li>
-								<li><a class="dropdown-item" href="/properties/rating">Suas avaliações</a></li>
-								<li><a class="dropdown-item" href="/properties/sales">Gerenciar vendas</a></li>
-								<li><a class="dropdown-item" href="/properties/company">Gerenciar empresas</a></li>
-								<li><hr class="dropdown-divider"></li>
-								<li class="p-1"><div class="form-check form-switch">
-									<input class="form-check-input dark-mode-switch" type="checkbox" role="switch">
-									<label class="form-check-label dark-mode-switch-label" for="dark-mode-switch">Queima olho</label>
-								</div></li>
-								<li><hr class="dropdown-divider"></li>
-								<li class="p-1"><div class="d-grid gap-2"><a class="btn btn-danger" href="/auth/logout">Sair</a></div></li>
-							</ul>
-						</div>
-						{/each}
-					{:else}
-					<div class="btn-group">
-						<a class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" aria-current="page" href="/signin">Autenticação</a>
-						<ul class="dropdown-menu dropdown-menu-end dropdown-menu-start">
-							<li><a class="dropdown-item" href="/auth/signin">Entrar na conta</a></li>
-						  	<li><a class="dropdown-item" href="/auth/signup">Criar conta</a></li>
-						</ul>
-					</div>
-					{/if}
-				</li>
-			</ul>
-			<form class="position-absolute top-0 start-50 translate-middle-x py-2 px-4" role="search" action="/search">
-				<div class="input-group mb-3">
-					<input class="form-control" type="search" name="q" placeholder="Faça uma pesquisa" aria-label="Search">
-					<button class="input-group-text" id="basic-addon1" type="submit">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-							<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-						</svg>
-					</button>
+	  <a class="navbar-brand" href="/">Olha a casa aí</a>
+	  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarContent">
+		<ul class="navbar-nav me-auto"></ul>
+		<form class="d-flex mx-auto" role="search" action="/search">
+		  <div class="input-group">
+			<input class="form-control" type="search" name="q" placeholder="Faça uma pesquisa" aria-label="Search">
+			<button class="btn btn-outline-secondary" type="submit">
+			  <i class="bi bi-search"></i>
+			</button>
+		  </div>
+		</form>
+		<ul class="navbar-nav ms-auto">
+		  <li class="nav-item dropdown">
+			{#if token}
+			{#each userData as user}
+			<a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+			  <img src="{user.profile_picture}" class="rounded-circle img-r" alt="Avatar">
+			</a>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+			  <li>
+				<a class="dropdown-item" href="/user/{user.nickname}">
+				  <div class="d-flex align-items-center">
+					<img src="{user.profile_picture}" class="rounded-circle" style="width: 40px; height: 40px;" alt="Avatar">
+					<span class="ms-2">{user.nickname}</span>
+				  </div>
+				</a>
+			  </li>
+			  <li><hr class="dropdown-divider"></li>
+			  <li><a class="dropdown-item" href="/properties/interested/">Meus interesses</a></li>
+			  <li><a class="dropdown-item" href="/properties/sales">Minhas vendas</a></li>
+			  <li><hr class="dropdown-divider"></li>
+			  <li class="dropdown-item">
+				<div class="form-check form-switch">
+				  <input class="form-check-input dark-mode-switch" type="checkbox" role="switch">
+				  <label class="form-check-label" for="dark-mode-switch">Queima olho</label>
 				</div>
-			</form>
-		</div>
-	</div>
-  </nav>
+			  </li>
+			  <li><hr class="dropdown-divider"></li>
+			  <li class="dropdown-item">
+				<a class="btn btn-danger w-100" href="/auth/logout">Sair</a>
+			  </li>
+			</ul>
+			{/each}
+			{:else}
+			<a class="nav-link dropdown-toggle" href="#" id="authMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+				<i class="bi bi-box-arrow-in-right" style="font-size: 2rem;"></i>
+			</a>
+			<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
+			  <li><a class="dropdown-item" href="/auth/signin">Entrar na conta</a></li>
+			  <li><a class="dropdown-item" href="/auth/signup">Criar conta</a></li>
+			</ul>
+			{/if}
+		  </li>
+		</ul>
+	  </div>
+	</div> 
+</nav>  

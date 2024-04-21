@@ -29,12 +29,8 @@
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-md-3 g-4 p-5">
         {#if propertiesData.length == 0}
-        <div class="col">
-            <div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
+        <div class="position-absolute top-50 start-50 translate-middle">
+            <p class="text-center">Não há nada aqui 👀</p>
         </div>
         {:else if propertiesData.length > 0 }
             {#each propertiesData as properties}

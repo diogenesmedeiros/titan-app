@@ -24,6 +24,42 @@
         alertPlaceholder.append(wrapper);
     }
 
+            // Função para formatar valores para moeda BRL
+            const formatarMoeda = (valor) => {
+        // Remover caracteres que não são dígitos
+        const apenasNumeros = valor.replace(/[^\d]/g, '');
+
+        // Converter para número decimal
+        const numero = parseFloat(apenasNumeros) / 100;
+
+        // Formatador para moeda BRL
+        const formatador = Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+        return formatador.format(numero);
+    };
+
+    // Evento para ajustar a entrada do usuário conforme a digitação
+    const aoDigitar = (event) => {
+        const campo = event.target;
+        const valorBruto = campo.value;
+
+        // Aplicar formatação
+        const valorFormatado = formatarMoeda(valorBruto);
+
+        const cursorPosition = campo.selectionStart;
+
+        campo.value = valorFormatado;
+
+        // Ajustar posição do cursor para evitar bugs
+        campo.selectionStart = cursorPosition;
+        campo.selectionEnd = cursorPosition;
+
+        price = valorFormatado
+    };
+
     async function deleteImmobile() {
         const id_immobile = {
             id: data.id
@@ -96,7 +132,9 @@
                     {#if immobileData.length > 0}
                         {#each immobileData as immobile}
                             <div class="text-center">
-                                <img class="img-fluid mb-3" src={immobile.photo_url} style="height: 350px; widht:250px" alt={immobile.creator.nickname}>
+                                <a href="/properties/update/upload/{immobile.id}">
+                                    <img class="img-fluid mb-3" src={immobile.photo_url} style="height: 350px; widht:250px" alt={immobile.creator.nickname}>
+                                </a>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <h2 class="fw-bold">{immobile.title}</h2>

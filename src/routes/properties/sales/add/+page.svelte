@@ -1,8 +1,6 @@
 <script>
     // @ts-nocheck
-    import { onMount } from 'svelte';
-
-    let title, description, price, company, state, city, address, cep, typeProperty, roomNumbers, totalArea, constructionYear, includedAmenities, saleConditions, instagram, instagramContact, phone, whatsappContact;
+    let title, description, price, state, city, address, cep, typeProperty, roomNumbers, totalArea, constructionYear, includedAmenities, saleConditions, instagram, instagramContact, phone, whatsappContact;
 	let formData;
 
     function alertMessage(message, type) {
@@ -21,16 +19,51 @@
         alertPlaceholder.append(wrapper);
     }
 
+        // Função para formatar valores para moeda BRL
+        const formatarMoeda = (valor) => {
+        // Remover caracteres que não são dígitos
+        const apenasNumeros = valor.replace(/[^\d]/g, '');
+
+        // Converter para número decimal
+        const numero = parseFloat(apenasNumeros) / 100;
+
+        // Formatador para moeda BRL
+        const formatador = Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+        return formatador.format(numero);
+    };
+
+    // Evento para ajustar a entrada do usuário conforme a digitação
+    const aoDigitar = (event) => {
+        const campo = event.target;
+        const valorBruto = campo.value;
+
+        // Aplicar formatação
+        const valorFormatado = formatarMoeda(valorBruto);
+
+        const cursorPosition = campo.selectionStart;
+
+        campo.value = valorFormatado;
+
+        // Ajustar posição do cursor para evitar bugs
+        campo.selectionStart = cursorPosition;
+        campo.selectionEnd = cursorPosition;
+
+        price = valorFormatado
+    };
+
     async function addProductHandlerSubmit(event) {
         event.preventDefault();
 
-        company = document.getElementById('company').value
+        alert(price)
 
     	formData = {
             title: title,
             description: description,
             price: price,
-            company: company,
             state: state,
             city: city,
             address: address,
@@ -76,7 +109,6 @@
                     alertMessage(data.message, 'danger')
 
                     setTimeout(() => {
-                        alertPlaceholder.innerHTML=''
                     }, 6000);
                 }
             }
@@ -85,127 +117,30 @@
         }
     }
 
-    // Função para obter os estados do IBGE
-    async function getStatesFromIBGE() {
+    async function getCepInfo() {
         try {
-            const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
-            const states = await response.json();
-            return states;
-        } catch (error) {
-            console.error('Erro ao obter estados:', error);
-            return [];
+            const cep = document.getElementById('cep').value
+
+            const response = await fetch(`https://api.postmon.com.br/v1/cep/${cep}`);
+            const cepData = await response.json();
+
+            city = cepData.cidade;
+            state = cepData.estado;
+
+            /*
+            logradouro
+            bairro
+            */
+        }catch(err) {
+            alertMessage(err, 'danger')
         }
     }
-
-    // Função para obter as cidades de um estado específico do IBGE
-    async function getCitiesFromIBGE(uf) {
-        try {
-            const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-            const cities = await response.json();
-            return cities;
-        } catch (error) {
-            console.error('Erro ao obter cidades:', error);
-            return [];
-        }
-    }
-
-    // Função para preencher o select de estados
-    async function populateStates() {
-        try {
-            const states = await getStatesFromIBGE();
-            const stateSelect = document.getElementById('state');
-            stateSelect.innerHTML = ''; // Limpa o conteúdo atual do select
-            states.forEach(state => {
-                const option = document.createElement('option');
-                option.value = state.sigla;
-                option.textContent = state.nome;
-                stateSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Erro ao preencher estados:', error);
-        }
-    }
-
-    // Função para preencher o select de cidades com base no estado selecionado
-    async function populateCities() {
-        try {
-            const uf = document.getElementById('state').value; // Obtém o estado selecionado
-            const cities = await getCitiesFromIBGE(uf);
-            const citySelect = document.getElementById('city');
-            citySelect.innerHTML = ''; // Limpa o conteúdo atual do select
-            cities.forEach(city => {
-                const option = document.createElement('option');
-                option.value = city.nome;
-                option.textContent = city.nome;
-                citySelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Erro ao preencher cidades:', error);
-        }
-    }
-
-    async function getCompany() {
-        let company = []
-
-        try{
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/company/user/all`, {
-                method: 'get',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authorization': sessionStorage.getItem('token')
-                }
-            })
-
-            if(response.ok) {
-                const dataResponse = await response.json()
-                company = dataResponse.message
-
-                if(dataResponse.message.length > 0) {
-                    const companySelect = document.getElementById('company')
-                    companySelect.innerHTML = ''
-
-                    company.forEach(company => {
-                        const option = document.createElement('option')
-                        option.value = company.id
-                        option.textContent = company.companyName
-
-                        companySelect.appendChild(option)
-                    })
-                }else{
-                    var inputs = document.querySelectorAll('.form-control');
-
-                    inputs.forEach(function(input) {
-                        input.disabled = true;
-                    });
-
-                    alertMessage('Você não pode adicionar um imovel se não tem uma empresa criada clique no link abaixo para cria uma. <a href="/properties/company/add">Clique aqui</a>', 'danger')
-                }
-            }
-        }catch (err) {
-            console.log(err)
-        }
-    }
-
-	async function handlerChangeState() {
-		await populateCities();
-
-		state = document.getElementById('state').value;
-	}
-
-	function handlerChangeCity() {
-		city = document.getElementById('city').value;
-	}
-
-    onMount(() => {
-        populateStates();
-        getCompany();
-    });
 </script>
 <svelte:head>
 	<title>Adicionar imovel - Olha a casa aí</title>
 	<meta name="description" content="Add product this app" />
 </svelte:head>
-<div id="liveAlertPlaceholder"></div>
+<div id="liveAlertPlaceholder" class="position-fixed top-0 end-0 p-3 m-4" style="z-index: 9999"></div>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -237,45 +172,9 @@
                                     <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/>
                                 </svg>
                             </span>
-                            <input type="number" class="form-control" id="price" bind:value={price} aria-describedby="priceHelp">
+                            <input type="text" class="form-control" id="price" bind:value={price} on:input={aoDigitar} aria-describedby="priceHelp">
                         </div>
                         <div id="descriptionHelp" class="form-text">Dê um preço ao seu imovel.</div>
-                    </div>
-                    <div class="col-12">
-                        <label for="company" class="form-label">Selecione a empresa</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building-fill" viewBox="0 0 16 16">
-                                    <path d="M3 0a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h3v-3.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5V16h3a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1zm1 2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5M4 5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM7.5 5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5m2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zM4.5 8h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5m2.5.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5zm3.5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5"/>
-                                </svg>
-                            </span>
-                            <select type="text" id="company" class="form-control" aria-describedby="companyHelp"></select>
-                        </div>
-                        <div id="companyHelp" class="form-text">Selecione a empresa responsavel por esse imovel.</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="state" class="form-label">Selecione o seu estado</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                                </svg>
-                            </span>
-                            <select type="text" id="state" on:change={handlerChangeState} class="form-control" aria-describedby="stateHelp"></select>
-                        </div>
-                        <div id="stateHelp" class="form-text">Selecione em qual estado está localizado seu imovel.</div>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="city" class="form-label">Selecione a sua cidade</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
-                                </svg>
-                            </span>
-                            <select type="text" id="city" on:change={handlerChangeCity} class="form-control" aria-describedby="cityHelp"></select>
-                        </div>
-                        <div id="cityHelp" class="form-text">Selecione em qual cidade está localizado seu imovel.</div>
                     </div>
                     <div class="col-12">
                         <label for="cep" class="form-label">CEP</label>
@@ -286,11 +185,12 @@
                                 </svg>
                             </span>
                             <input type="text" class="form-control" id="cep" bind:value={cep} aria-describedby="cepHelp">
+                            <button type="button" class="btn btn-secondary" on:click={getCepInfo}>buscar</button>
                         </div>
-                        <div id="titleHelp" class="form-text">Coloque o cep da rua onde a sua casa esta localizada.</div>
+                        <div id="titleHelp" class="form-text">Coloque o cep onde a sua casa esta localizada. Automaticamente sua cidade e estados serão preenchidas, assim como a rua e o bairro.</div>
                     </div>
                     <div class="col-12">
-                        <label for="address" class="form-label">Endereço</label>
+                        <label for="address" class="form-label">Rua</label>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pin-map-fill" viewBox="0 0 16 16">
@@ -300,7 +200,7 @@
                             </span>
                             <input type="text" class="form-control" id="address" bind:value={address} aria-describedby="addressHelp">
                         </div>
-                        <div id="addressHelp" class="form-text">Coloque o endereço onde sua casa esta localizada.</div>
+                        <div id="addressHelp" class="form-text">Rua onde sua casa esta localizada.</div>
                     </div>
                     <div class="col-12">
                         <label for="typeProperty" class="form-label">Tipo de propriedade</label>

@@ -1,12 +1,9 @@
 <script>
     // @ts-nocheck
     import { onMount } from "svelte";
-    import jquery from "jquery";
     
     let immobileData = [];
-    let commentData = [];
     let userData;
-    let commentProd, idProd;
     let interestData;
     
     export let data;
@@ -50,45 +47,7 @@
                 const responseData = await response.json();
                 immobileData = responseData.message;
             }
-    
-    
-            const responseComment = await fetch(`http://localhost:8081/api/v1/properties/comment/${immobileData[0].id}`, {
-                method: 'GET',
-                headers: { 
-                    'authorization': localStorage.getItem('token'),
-                }
-            })
-    
-            if (!response.ok) {
-                throw new Error('Erro ao carregar os dados');
-            }else{
-                const responseCommentData = await responseComment.json()
-                commentData = responseCommentData.message
-            }
-    
-            var containerComments = document.getElementById('comments');
-            containerComments.innerHTML = '';
-    
-            commentData.forEach(comment => {
-                var newComment = document.createElement('div');
-                newComment.setAttribute('class', 'mb-3 p-3 rounded form-shadow');
-                newComment.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-    
-                newComment.innerHTML = `
-                    <div id="info">
-                        <a href="/user/${comment.creator.nickname}" class="d-flex align-items-center text-decoration-none">
-                            <img src="${comment.creator.profile_picture}" class="rounded-circle me-2" style="width: 40px;height: 40px;" alt="Avatar">
-                            <p class="mb-0">${comment.creator.nickname}</p>
-                        </a>
-                    </div>
-                    <div id="comment-text" class="m-3">
-                        <p>${comment.comment}</p>
-                    </div>
-                `;
-    
-                containerComments.appendChild(newComment);
-            });
-    
+
             document.title = immobileData[0].title + " - Olha a casa aí"
         } catch (error) {
             console.error(error);
@@ -123,57 +82,7 @@
         } catch(error) {
             console.error(error);
         }
-    }
-    
-    async function commentHandlerSubmit(event) {
-        event.preventDefault()
-    
-        const formData = {
-         comment: commentProd,
-         product_id: idProd,
-         }
-    
-        formData.product_id = data.id
-    
-        try {
-            const response = await fetch(`http://localhost:8081/api/v1/properties/comment`, {
-                method: 'POST',
-                headers: {
-                    'authorization': sessionStorage.getItem('token'),
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-    
-            if (!response.ok) {
-                throw new Error('Erro ao carregar os dados');
-            }
-    
-            var newComment = document.createElement('div');
-            newComment.setAttribute('class', 'mb-3 p-3 rounded form-shadow');
-            newComment.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-    
-            jquery('#commentInput').val('')
-    
-            newComment.innerHTML = `
-                <div id="info">
-                    <a href="/user/${user.nickname}" class="d-flex align-items-center text-decoration-none">
-                        <img src="${user.profile_picture}" class="rounded-circle me-2" style="width: 40px;height: 40px;" alt="Avatar">
-                        <p class="mb-0">${user.nickname}</p>
-                    </a>
-                </div>
-                <div id="comment-text" class="m-3">
-                    <p>${formData.comment}</p>
-                </div>
-            `;
-    
-            var containerComments = document.getElementById('comments');
-            containerComments.appendChild(newComment);
-        }catch(err) {
-            console.log(err)
-        }
-    }
+   }
  </script>
  <style>
     .img-r {
@@ -181,10 +90,10 @@
     height: 40px;
     }
  </style>
- <div id="liveAlertPlaceholder"></div>
+<div id="liveAlertPlaceholder" class="position-fixed top-0 end-0 p-3 m-4" style="z-index: 9999"></div>
  {#if immobileData.length > 0}
  {#each immobileData as immobile}
- <div class="container form-shadow position-absolute start-50 translate-middle" style="top: 120%;">
+ <div class="container form-shadow position-absolute start-50 translate-middle" style="top: 110%;">
     <div class="row justify-content-center mt-2">
        <div class="col-md-8">
           <div class="card shadow form-shadow">
@@ -193,7 +102,7 @@
                    <img class="img-fluid mb-3" src={immobile.photo_url} style="height: 350px; widht:250px" alt={immobile.creator.nickname}>
                 </div>
                 <div class="d-flex justify-content-between align-items-center">
-                   <h2 class="fw-bold">{immobile.title}</h2>
+                   <h2 class="fw-bold">{#if immobile.suspended}<span class="badge bg-danger">Suspenso</span>{/if} {immobile.title}</h2>
                    <div>
                       {#if userData.uid != null}
                       {#if immobile.creator.uid == userData.uid }
@@ -233,7 +142,7 @@
                    </div>
                 </div>
                 <hr>
-                <p class="fs-4 mb-3"><span class="text-success">R$ {immobile.price}</span></p>
+                <p class="fs-4 mb-3"><span class="text-success">{immobile.price}</span></p>
                 <hr>
                 <div>
                    <p class="fw-bold fs-4">Descrição do Imóvel</p>
@@ -286,36 +195,6 @@
                       <p class="mb-0">{immobile.creator.nickname}</p>
                    </a>
                 </div>
-             </div>
-          </div>
-       </div>
-    </div>
-    <div class="row justify-content-center mt-2">
-       <div class="col-md-8">
-          <div class="card shadow">
-             <div class="card-body">
-                <div id="comment-form">
-                   <p class="text-center fs-4 fw-bold">Comentários</p>
-                   {#if userData.uid != null }
-                   <form on:submit={commentHandlerSubmit}>
-                      <div class="mb-3">
-                         <div class="input-group">
-                            <div>
-                               <img src="{userData.profile_picture}" class="rounded-circle me-2 img-r" alt="Avatar">
-                            </div>
-                            <textarea type="text" class="form-control" id="commentInput" style="height: 40px;" bind:value={commentProd}></textarea>
-                            <button class="input-group-text">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
-                                  <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/>
-                               </svg>
-                            </button>
-                         </div>
-                      </div>
-                   </form>
-                   {/if}    
-                </div>
-                <hr>
-                <div id="comments"></div>
              </div>
           </div>
        </div>

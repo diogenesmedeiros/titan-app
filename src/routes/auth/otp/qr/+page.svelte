@@ -19,7 +19,7 @@
     }
 
     function finishScan() {
-        window.location.href="/auth/otp/code"
+        window.location.href="/auth/logout"
     }
 
     onMount(() => {

@@ -60,10 +60,6 @@
 
 				if(data.message != undefined) {
 					alerts(data.message, 'danger')
-
-					setTimeout(() => {
-						alertPlaceholder.innerHTML='' // Remove o alerta após 10 segundos
-					}, 1500);
 				}
 			}
 		}catch (error) {

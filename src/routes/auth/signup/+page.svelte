@@ -25,6 +25,7 @@
         document.getElementById('div2').style.display = 'block';
         document.getElementById('btn-prev').style.display = 'block';
         document.getElementById('btn-next').style.display = 'none';
+		document.getElementById('btn-submit').style.display = 'block'
     }
 
     function prev() {
@@ -32,6 +33,7 @@
         document.getElementById('div1').style.display = 'block';
         document.getElementById('btn-prev').style.display = 'none';
         document.getElementById('btn-next').style.display = 'block';
+        document.getElementById('btn-submit').style.display = 'none';
     }
 
 	    // Função para obter os estados do IBGE
@@ -93,7 +95,7 @@
         }
     }
 
-	async function signinHandlerSubmit(event) {
+	async function signupHandlerSubmit(event) {
 		event.preventDefault()
 
 		const formData = {
@@ -109,7 +111,7 @@
 			password: password
 		}
 
-		console.log(birth)
+		console.log(formData)
 
 		try {
 			const response = await fetch('http://localhost:8081/api/v1/auth/signup', {
@@ -160,7 +162,9 @@
 
     onMount(() => {
         populateStates();
-        getCompany();
+
+		document.getElementById('btn-submit').style.display = 'none';
+		document.getElementById('btn-prev').style.display = 'none';
     });
 </script>
 <svelte:head>
@@ -172,7 +176,7 @@
     <div class="card shadow p-3 mb-5 bg-body rounded form-shadow" style="width: 400px;">
         <div class="card-body">
             <h5 class="card-title text-center mb-4">Cadastro</h5>
-            <form on:submit={signinHandlerSubmit}>
+            <form on:submit={signupHandlerSubmit}>
 				<div id="div1">
 					<div class="mb-3">
 						<label for="username" class="form-label">Seu nome</label>
@@ -243,6 +247,7 @@
 				</div>
 				<div class="d-grid gap-2">
 					<button type="button" id="btn-prev" class="btn btn-secondary" on:click={prev}>Anterior</button>
+					<button type="submit" id="btn-submit" class="btn btn-primary">Cadastra</button>
 					<button type="button" id="btn-next" class="btn btn-primary" on:click={next}>Próximo</button>
 				</div>
             </form>

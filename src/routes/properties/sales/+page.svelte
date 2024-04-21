@@ -49,7 +49,7 @@
                                 <h5 class="card-title">{immobile.title}</h5>
                                 <p class="card-text">{immobile.description}</p>
                                 <hr>
-                                <p class="card-text fs-5">R${immobile.price}</p>
+                                <p class="card-text fs-5">{immobile.price}</p>
                             </div>
                             <div class="card-footer">
                                 <small class="text-body-secondary">{immobile.city} - {immobile.state}</small>

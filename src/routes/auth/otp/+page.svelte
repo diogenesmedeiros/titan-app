@@ -33,7 +33,7 @@
 
             alerts(responseData.message, "success")
 
-            window.location.href="/auth/logout"
+            window.location.href="/auth/otp/qr"
         }else{
             const responseData = await response.json()
 

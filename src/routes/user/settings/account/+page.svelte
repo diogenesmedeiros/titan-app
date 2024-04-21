@@ -32,16 +32,18 @@
         event.preventDefault()
         
         const formData = {
-            nickname: nickname_update,
-            biography: biography_update,
-            email: email_update,
-            phone: phone_update,
-            instagram: instagram_update
+            nickname: nickname_update.value,
+            biography: biography_update.value,
+            email: email_update.value,
+            phone: phone_update.value,
+            instagram: instagram_update.value
         }
 
+        console.log(formData)
+
         try {
-            const response = await fetch('http://localhost:8081/api/v1/users/update', {
-                method: 'POST',
+            const response = await fetch('http://localhost:8081/api/v1/users', {
+                method: 'PUT',
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
                     'Content-Type': 'application/json'
@@ -57,6 +59,30 @@
                 const data = await response.json()
 
                 alerts(data.message, 'danger')
+            }
+        }catch(err) {
+            alerts(err, 'danger')
+        }
+    }
+
+    async function deleteAccount() {
+        try{
+            const response = await fetch('http://localhost:8081/api/v1/users/', {
+                method: 'DELETE',
+                headers: {
+                    'authorization': sessionStorage.getItem('token'),
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            if(response.ok) {
+                const data = await response.json()
+                
+                alerts(data.message, 'success')
+
+                setTimeout(() => {
+                    window.location.href = '/auth/logout'
+                }, 1100)
             }
         }catch(err) {
             alerts(err, 'danger')
@@ -157,8 +183,8 @@
         await populateStates();
 
         try {
-            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/settings`, {
-                method: 'POST',
+            const response = await fetch(`${localStorage.getItem('url')}/api/v1/users/`, {
+                method: 'GET',
                 headers: {
                     'authorization': sessionStorage.getItem('token'),
                     'Content-Type': 'application/json'
@@ -170,8 +196,6 @@
             } else {
                 const responseData = await response.json();
                 userData = responseData.message;
-
-                console.log(userData)
             }
         } catch (error) {
             console.error(error);
@@ -226,7 +250,7 @@
     <title>Fazer upload de uma foto - Olha a casa aí</title>
     <meta name="description" content="About this app" />
 </svelte:head>
-<div id="liveAlertPlaceholder"></div>
+<div id="liveAlertPlaceholder" class="position-fixed top-0 end-0 p-3 m-4" style="z-index: 9999"></div>
 <div class="container mt-5 z-1 form-shadow">
   <div class="row">
     <div class="col-md-3">
@@ -234,7 +258,6 @@
         <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('edit-account')}>Editar Conta</button>
         <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('edit-personal-data')}>Editar Dados Pessoais</button>
         <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('site-settings')}>Segurança</button>
-        <button class="list-group-item list-group-item-action form-shadow" on:click={() => showSection('privacy-data-deletion')}>Privacidade e Exclusão de Dados</button>
       </div>
     </div>
     <div class="col-md-9">
@@ -242,7 +265,8 @@
         {#each userData as user}
         <div id="edit-account" class="hidden border rounded p-4">
             <h2 class="mb-3">Editar Conta</h2>
-            <form class="row g-3" on:submit={updateAccount}>
+            <!--
+                <form class="row g-3">
                 <div class="md-6">
                     <div class="text-center">
                         <img src="{user.profile_picture}" id="profile_picture_img" class="rounded-circle" alt="Avatar">
@@ -253,7 +277,8 @@
                     <input type="file" id="profile_picture" class="form-control profile_picture" style="visibility: hidden;">
                 </div>
             </form>
-            <form>
+            -->
+            <form on:submit={updateAccount}>
                 <div class="row">
                     <div class="col-12 mb-3">
                         <label for="nickname" class="form-label">Seu nome de perfil</label>
@@ -286,10 +311,13 @@
                         <label class="form-check-label" for="useInstagram">Usar Instagram como forma de contato</label>
                     </div>
                 </div>
-                <div class="d-grid gap-2">
+                <div class="d-grid gap-2 m-2">
                     <button type="submit" class="btn btn-primary">Salvar alterações</button>
                 </div>
             </form>
+            <div class="d-grid gap-2 m-2">
+                <button class="btn btn-danger" on:click={deleteAccount}>Excluir conta</button>
+            </div>
         </div>
         <div id="edit-personal-data" class="hidden border rounded p-3">
             <!-- Conteúdo para editar dados pessoais -->
@@ -362,11 +390,6 @@
                     <button type="submit" class="btn btn-primary">Enviar</button>
                 </div>
             </form>
-        </div>
-        <div id="privacy-data-deletion" class="hidden border rounded p-3">
-            <!-- Conteúdo para privacidade e exclusão de dados -->
-            <h2>Privacidade e Exclusão de Dados</h2>
-            <p>Aqui você pode gerenciar sua privacidade e solicitar a exclusão de dados.</p>
         </div>
         {/each}
         {:else}
